@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Propuesta económica — landing Colegio Northern" />
+  <title>Propuesta económica — Colegio Northern</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --surface: #ffffff;
+      --text: #1d1d1f;
+      --text-muted: #6e6e73;
+      --title: #479046;
+      --border: rgba(0, 0, 0, 0.08);
+      --radius-lg: 24px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-font-smoothing: antialiased; }
+    body {
+      margin: 0;
+      font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+      font-size: 17px;
+      line-height: 1.5;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .wrap {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 48px 24px 64px;
+    }
+
+    .doc-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 40px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--border);
+    }
+    .doc-header img {
+      display: block;
+      width: auto;
+      height: clamp(88px, 22vw, 140px);
+      max-width: 100%;
+      border-radius: 12px;
+      object-fit: contain;
+    }
+    .doc-header__text {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .doc-header__text span {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .doc-header__text strong {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .card {
+      padding: 40px clamp(24px, 4vw, 48px);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.04);
+    }
+
+    .display {
+      font-family: "Instrument Serif", Georgia, serif;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin: 0 0 12px;
+      font-size: clamp(28px, 5vw, 40px);
+      color: var(--title);
+    }
+
+    .meta {
+      margin: 0 0 32px;
+      font-size: 15px;
+      color: var(--text-muted);
+      max-width: 62ch;
+    }
+
+    .card h3 {
+      margin: 36px 0 12px;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--title);
+    }
+    .card h3:first-of-type {
+      margin-top: 0;
+    }
+
+    .lead {
+      margin: 0 0 16px;
+      font-size: 15px;
+      color: var(--text-muted);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th,
+    td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    th {
+      font-weight: 600;
+      background: var(--bg);
+    }
+
+    @media print {
+      body { background: #fff; }
+      .card { box-shadow: none; border: 1px solid #ddd; }
+      .wrap { padding-top: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="doc-header">
+      <img src="logo northern.jpeg" width="320" height="320" alt="Colegio Northern" />
+    </header>
+
+    <main class="card">
+      <h1 class="display">Presupuesto - Landing Page Institucional</h1>
+      <p class="meta">Propuesta para una landing page institucional del Colegio Northern: sitio web que detiene información comercial, imágenes y presentaciones con máxima calidad visual, responsive (óptima visualización en cualquier dispositivo).</p>
+
+      <h3>Desarrollo — total USD 250</h3>
+      <p class="lead">Incluye maquetación según diseño acordado, publicación y una ronda de ajustes previos al cierre.</p>
+      <table aria-label="Pagos por hitos de desarrollo">
+        <thead>
+          <tr>
+            <th>Hito</th>
+            <th>Momento</th>
+            <th>Monto (USD)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Primera entrega / inicio de trabajo</td>
+            <td>Al iniciar el desarrollo</td>
+            <td>125 (50&nbsp;%)</td>
+          </tr>
+          <tr>
+            <td>Cierre y despliegue</td>
+            <td>Al publicar el sitio en producción</td>
+            <td>125 (50&nbsp;%)</td>
+          </tr>
+          <tr>
+            <th colspan="2">Total desarrollo</th>
+            <th>250</th>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Mantenimiento — USD 50 / mes</h3>
+      <p class="lead">Cuota mensual recurrente tras el despliegue: incluye registro o renovación del nombre de dominio, hosting para landing, soporte técnico y actualizaciones de contenido acordadas (alcance detallable por contrato).</p>
+      <table aria-label="Mantenimiento mensual">
+        <thead>
+          <tr>
+            <th>Concepto</th>
+            <th>Periodicidad</th>
+            <th>Monto (USD)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Mantenimiento, soporte, dominio y hosting</td>
+            <td>Mensual</td>
+            <td>50</td>
+          </tr>
+          
+        </tbody>
+      </table>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model LandingPage {
+  id              String           @id @default(cuid())
+  slug            String           @unique @default("home")
+  title           String
+  eyebrow         String
+  heroTitle       String
+  heroSubtitle    String
+  ctaLabel        String
+  ctaHref         String
+  contactTitle    String
+  contactBody     String
+  contactEmail    String
+  contactPhone    String?
+  published       Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  sections        LandingSection[]
+  photos          Photo[]
+}
+
+model LandingSection {
+  id            String      @id @default(cuid())
+  landingPageId String
+  title         String
+  body          String
+  sortOrder     Int
+  published     Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  landingPage   LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
+
+  @@index([landingPageId, sortOrder])
+}
+
+model Photo {
+  id            String      @id @default(cuid())
+  landingPageId String
+  title         String
+  altText       String
+  caption       String?
+  driveUrl      String
+  driveFileId   String
+  sortOrder     Int
+  published     Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  landingPage   LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
+
+  @@index([landingPageId, sortOrder])
+}

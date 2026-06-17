@@ -201,6 +201,10 @@ export async function getPublishedLandingPage() {
   });
 }
 
+export type PublishedLandingPage = NonNullable<
+  Awaited<ReturnType<typeof getPublishedLandingPage>>
+>;
+
 export async function updateLandingPage(formData: FormData) {
   const parsed = landingPageSchema.parse(Object.fromEntries(formData));
 

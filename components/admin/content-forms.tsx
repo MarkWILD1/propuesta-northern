@@ -7,6 +7,14 @@ type LandingPage = {
   heroSubtitle: string;
   ctaLabel: string;
   ctaHref: string;
+  levelsTitle: string;
+  statsTitle: string;
+  featuredTitle: string;
+  activitiesTitle: string;
+  galleryTitle: string;
+  newsTitle: string;
+  instagramTitle: string;
+  instagramUrl: string;
   contactTitle: string;
   contactBody: string;
   contactEmail: string;
@@ -16,6 +24,8 @@ type LandingPage = {
     id: string;
     title: string;
     body: string;
+    ctaLabel: string | null;
+    ctaHref: string | null;
     sortOrder: number;
     published: boolean;
   }>;
@@ -54,6 +64,61 @@ export function LandingPageForm({ page }: { page: LandingPage }) {
         <div className="field">
           <label htmlFor="ctaHref">Link CTA</label>
           <input id="ctaHref" name="ctaHref" defaultValue={page.ctaHref} required />
+        </div>
+      </div>
+      <h3>Titulos de las secciones</h3>
+      <div className="admin-grid">
+        <div className="field">
+          <label htmlFor="levelsTitle">Titulo niveles</label>
+          <input id="levelsTitle" name="levelsTitle" defaultValue={page.levelsTitle} required />
+        </div>
+        <div className="field">
+          <label htmlFor="statsTitle">Titulo estadisticas</label>
+          <input id="statsTitle" name="statsTitle" defaultValue={page.statsTitle} required />
+        </div>
+        <div className="field">
+          <label htmlFor="featuredTitle">Titulo destacados</label>
+          <input
+            id="featuredTitle"
+            name="featuredTitle"
+            defaultValue={page.featuredTitle}
+            required
+          />
+        </div>
+        <div className="field">
+          <label htmlFor="activitiesTitle">Titulo actividades</label>
+          <input
+            id="activitiesTitle"
+            name="activitiesTitle"
+            defaultValue={page.activitiesTitle}
+            required
+          />
+        </div>
+        <div className="field">
+          <label htmlFor="galleryTitle">Titulo galeria</label>
+          <input id="galleryTitle" name="galleryTitle" defaultValue={page.galleryTitle} required />
+        </div>
+        <div className="field">
+          <label htmlFor="newsTitle">Titulo noticias</label>
+          <input id="newsTitle" name="newsTitle" defaultValue={page.newsTitle} required />
+        </div>
+        <div className="field">
+          <label htmlFor="instagramTitle">Titulo Instagram</label>
+          <input
+            id="instagramTitle"
+            name="instagramTitle"
+            defaultValue={page.instagramTitle}
+            required
+          />
+        </div>
+        <div className="field">
+          <label htmlFor="instagramUrl">Link Instagram (opcional)</label>
+          <input
+            id="instagramUrl"
+            name="instagramUrl"
+            defaultValue={page.instagramUrl}
+            placeholder="https://instagram.com/..."
+          />
         </div>
       </div>
       <div className="field">
@@ -130,6 +195,29 @@ export function SectionForm({
           defaultValue={section?.body ?? ""}
           required
         />
+      </div>
+      <div className="admin-grid">
+        <div className="field">
+          <label htmlFor={`section-cta-label-${section?.id ?? "new"}`}>
+            Texto del boton (opcional)
+          </label>
+          <input
+            id={`section-cta-label-${section?.id ?? "new"}`}
+            name="ctaLabel"
+            defaultValue={section?.ctaLabel ?? ""}
+            placeholder="Leer mas"
+          />
+        </div>
+        <div className="field">
+          <label htmlFor={`section-cta-href-${section?.id ?? "new"}`}>
+            Link del boton (opcional)
+          </label>
+          <input
+            id={`section-cta-href-${section?.id ?? "new"}`}
+            name="ctaHref"
+            defaultValue={section?.ctaHref ?? ""}
+          />
+        </div>
       </div>
       <div className="field">
         <label htmlFor={`section-sort-${section?.id ?? "new"}`}>Orden</label>

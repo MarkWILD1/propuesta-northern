@@ -25,6 +25,14 @@ model LandingPage {
   heroSubtitle    String
   ctaLabel        String
   ctaHref         String
+  levelsTitle     String           @default("Propuesta educativa")
+  statsTitle      String           @default("Nuestra comunidad en numeros")
+  featuredTitle   String           @default("Lo que nos define")
+  activitiesTitle String           @default("Vida en el colegio")
+  galleryTitle    String           @default("Momentos de la comunidad Northern")
+  newsTitle       String           @default("Noticias")
+  instagramTitle  String           @default("Seguinos en Instagram")
+  instagramUrl    String           @default("")
   contactTitle    String
   contactBody     String
   contactEmail    String
@@ -34,6 +42,14 @@ model LandingPage {
   updatedAt       DateTime         @updatedAt
   sections        LandingSection[]
   photos          Photo[]
+  carouselSlides  CarouselSlide[]
+  navLinks        NavLink[]
+  programLevels   ProgramLevel[]
+  stats           StatItem[]
+  activities      ActivityTab[]
+  news            NewsItem[]
+  instagramPosts  InstagramPost[]
+  locations       Location[]
 }
 
 model LandingSection {
@@ -41,6 +57,8 @@ model LandingSection {
   landingPageId String
   title         String
   body          String
+  ctaLabel      String?
+  ctaHref       String?
   sortOrder     Int
   published     Boolean     @default(true)
   createdAt     DateTime    @default(now())
@@ -58,6 +76,140 @@ model Photo {
   caption       String?
   driveUrl      String
   driveFileId   String
+  sortOrder     Int
+  published     Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  landingPage   LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
+
+  @@index([landingPageId, sortOrder])
+}
+
+model CarouselSlide {
+  id            String      @id @default(cuid())
+  landingPageId String
+  title         String
+  altText       String
+  caption       String?
+  driveUrl      String
+  driveFileId   String
+  sortOrder     Int
+  published     Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  landingPage   LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
+
+  @@index([landingPageId, sortOrder])
+}
+
+model NavLink {
+  id            String      @id @default(cuid())
+  landingPageId String
+  label         String
+  href          String
+  sortOrder     Int
+  published     Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  landingPage   LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
+
+  @@index([landingPageId, sortOrder])
+}
+
+model ProgramLevel {
+  id            String      @id @default(cuid())
+  landingPageId String
+  title         String
+  body          String
+  altText       String
+  driveUrl      String
+  driveFileId   String
+  ctaLabel      String?
+  ctaHref       String?
+  sortOrder     Int
+  published     Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  landingPage   LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
+
+  @@index([landingPageId, sortOrder])
+}
+
+model StatItem {
+  id            String      @id @default(cuid())
+  landingPageId String
+  label         String
+  value         String
+  sortOrder     Int
+  published     Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  landingPage   LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
+
+  @@index([landingPageId, sortOrder])
+}
+
+model ActivityTab {
+  id            String      @id @default(cuid())
+  landingPageId String
+  title         String
+  body          String
+  altText       String?
+  driveUrl      String?
+  driveFileId   String?
+  ctaLabel      String?
+  ctaHref       String?
+  sortOrder     Int
+  published     Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  landingPage   LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
+
+  @@index([landingPageId, sortOrder])
+}
+
+model NewsItem {
+  id            String      @id @default(cuid())
+  landingPageId String
+  title         String
+  excerpt       String
+  dateLabel     String?
+  altText       String?
+  driveUrl      String?
+  driveFileId   String?
+  href          String?
+  sortOrder     Int
+  published     Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  landingPage   LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
+
+  @@index([landingPageId, sortOrder])
+}
+
+model InstagramPost {
+  id            String      @id @default(cuid())
+  landingPageId String
+  caption       String?
+  altText       String
+  driveUrl      String
+  driveFileId   String
+  href          String?
+  sortOrder     Int
+  published     Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  landingPage   LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
+
+  @@index([landingPageId, sortOrder])
+}
+
+model Location {
+  id            String      @id @default(cuid())
+  landingPageId String
+  name          String
+  addressLines  String
+  phone         String?
   sortOrder     Int
   published     Boolean     @default(true)
   createdAt     DateTime    @default(now())

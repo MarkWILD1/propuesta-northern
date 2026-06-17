@@ -8,27 +8,22 @@ type Photo = {
   driveFileId: string;
 };
 
-export function PhotoGallery({ photos }: { photos: Photo[] }) {
+export function PhotoGallery({
+  photos,
+  title = "Momentos de la comunidad Northern",
+}: {
+  photos: Photo[];
+  title?: string;
+}) {
   if (photos.length === 0) {
-    return (
-      <section className="landing-section gallery-empty" aria-labelledby="gallery-title">
-        <p className="section-kicker">Galeria</p>
-        <h2 id="gallery-title" className="display">
-          Las fotos apareceran cuando el administrador las publique.
-        </h2>
-        <p className="muted">
-          El panel acepta enlaces publicos de Google Drive para mantener la pagina
-          actualizada sin subir archivos al servidor.
-        </p>
-      </section>
-    );
+    return null;
   }
 
   return (
-    <section className="landing-section" aria-labelledby="gallery-title">
+    <section id="galeria" className="landing-section" aria-labelledby="gallery-title">
       <p className="section-kicker">Galeria</p>
       <h2 id="gallery-title" className="display">
-        Momentos de la comunidad Northern.
+        {title}
       </h2>
       <div className="photo-grid">
         {photos.map((photo) => (
@@ -37,6 +32,7 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
               src={getDriveImageDisplayUrl(photo.driveFileId)}
               alt={photo.altText}
               loading="lazy"
+              referrerPolicy="no-referrer"
             />
             <figcaption>
               <strong>{photo.title}</strong>

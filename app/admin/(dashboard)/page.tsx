@@ -8,6 +8,7 @@ export default async function AdminDashboardPage() {
   const page = await getLandingPageForAdmin();
   const publishedSections = page.sections.filter((section) => section.published).length;
   const publishedPhotos = page.photos.filter((photo) => photo.published).length;
+  const publishedSlides = page.carouselSlides.filter((slide) => slide.published).length;
 
   return (
     <div className="stack">
@@ -27,6 +28,11 @@ export default async function AdminDashboardPage() {
           <p>{page.sections.length} secciones totales</p>
         </article>
         <article className="admin-card metric-card">
+          <span>Slides del carrusel</span>
+          <strong>{publishedSlides}</strong>
+          <p>{page.carouselSlides.length} slides totales</p>
+        </article>
+        <article className="admin-card metric-card">
           <span>Fotos publicadas</span>
           <strong>{publishedPhotos}</strong>
           <p>{page.photos.length} fotos totales</p>
@@ -43,9 +49,45 @@ export default async function AdminDashboardPage() {
           <span>Contenido</span>
           <strong>Editar textos y secciones</strong>
         </Link>
+        <Link className="admin-card action-card" href="/admin/navegacion">
+          <span>Navegacion</span>
+          <strong>Menu del header</strong>
+        </Link>
+        <Link className="admin-card action-card" href="/admin/carousel">
+          <span>Carrusel</span>
+          <strong>Imagenes destacadas del hero</strong>
+        </Link>
+        <Link className="admin-card action-card" href="/admin/niveles">
+          <span>Niveles</span>
+          <strong>Propuesta educativa</strong>
+        </Link>
+        <Link className="admin-card action-card" href="/admin/estadisticas">
+          <span>Estadisticas</span>
+          <strong>Numeros de la comunidad</strong>
+        </Link>
+        <Link className="admin-card action-card" href="/admin/actividades">
+          <span>Actividades</span>
+          <strong>Pestanas de vida escolar</strong>
+        </Link>
+        <Link className="admin-card action-card" href="/admin/noticias">
+          <span>Noticias</span>
+          <strong>Novedades del colegio</strong>
+        </Link>
         <Link className="admin-card action-card" href="/admin/photos">
           <span>Fotos Drive</span>
           <strong>Agregar y ordenar imagenes</strong>
+        </Link>
+        <Link className="admin-card action-card" href="/admin/instagram">
+          <span>Instagram</span>
+          <strong>Feed social</strong>
+        </Link>
+        <Link className="admin-card action-card" href="/admin/sedes">
+          <span>Sedes</span>
+          <strong>Direcciones del footer</strong>
+        </Link>
+        <Link className="admin-card action-card" href="/admin/usuarios">
+          <span>Usuarios</span>
+          <strong>Acceso al panel admin</strong>
         </Link>
       </section>
     </div>

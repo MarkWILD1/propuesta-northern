@@ -49,5 +49,5 @@ export function parseDriveImageUrl(value: string): DriveImage {
 }
 
 export function getDriveImageDisplayUrl(fileId: string) {
-  return `https://drive.google.com/uc?export=view&id=${fileId}`;
+  return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`;
 }

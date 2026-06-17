@@ -1,4 +1,5 @@
 import { LandingPage } from "@/components/landing/landing-page";
+import { LandingWithSplash } from "@/components/landing/landing-with-splash";
 import { getPublishedLandingPage } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
@@ -15,5 +16,9 @@ export default async function HomePage() {
     );
   }
 
-  return <LandingPage page={page} />;
+  return (
+    <LandingWithSplash>
+      <LandingPage page={page} />
+    </LandingWithSplash>
+  );
 }

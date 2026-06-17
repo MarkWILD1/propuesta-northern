@@ -1,16 +1,35 @@
 "use server";
 
+import { hash } from "bcryptjs";
 import { AuthError } from "next-auth";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { auth, signIn, signOut } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import {
+  deleteActivityTab,
+  deleteCarouselSlide,
+  deleteInstagramPost,
+  deleteLocation,
+  deleteNavLink,
+  deleteNewsItem,
   deletePhoto,
+  deleteProgramLevel,
   deleteSection,
+  deleteStatItem,
   updateLandingPage,
+  upsertActivityTab,
+  upsertCarouselSlide,
+  upsertInstagramPost,
+  upsertLocation,
+  upsertNavLink,
+  upsertNewsItem,
   upsertPhoto,
+  upsertProgramLevel,
   upsertSection,
+  upsertStatItem,
 } from "@/lib/content";
 
 async function requireAdmin() {
@@ -75,4 +94,146 @@ export async function savePhoto(formData: FormData) {
 export async function removePhoto(formData: FormData) {
   await requireAdmin();
   await deletePhoto(formData);
+}
+
+export async function saveCarouselSlide(formData: FormData) {
+  await requireAdmin();
+  await upsertCarouselSlide(formData);
+}
+
+export async function removeCarouselSlide(formData: FormData) {
+  await requireAdmin();
+  await deleteCarouselSlide(formData);
+}
+
+export async function saveNavLink(formData: FormData) {
+  await requireAdmin();
+  await upsertNavLink(formData);
+}
+
+export async function removeNavLink(formData: FormData) {
+  await requireAdmin();
+  await deleteNavLink(formData);
+}
+
+export async function saveProgramLevel(formData: FormData) {
+  await requireAdmin();
+  await upsertProgramLevel(formData);
+}
+
+export async function removeProgramLevel(formData: FormData) {
+  await requireAdmin();
+  await deleteProgramLevel(formData);
+}
+
+export async function saveStatItem(formData: FormData) {
+  await requireAdmin();
+  await upsertStatItem(formData);
+}
+
+export async function removeStatItem(formData: FormData) {
+  await requireAdmin();
+  await deleteStatItem(formData);
+}
+
+export async function saveActivityTab(formData: FormData) {
+  await requireAdmin();
+  await upsertActivityTab(formData);
+}
+
+export async function removeActivityTab(formData: FormData) {
+  await requireAdmin();
+  await deleteActivityTab(formData);
+}
+
+export async function saveNewsItem(formData: FormData) {
+  await requireAdmin();
+  await upsertNewsItem(formData);
+}
+
+export async function removeNewsItem(formData: FormData) {
+  await requireAdmin();
+  await deleteNewsItem(formData);
+}
+
+export async function saveInstagramPost(formData: FormData) {
+  await requireAdmin();
+  await upsertInstagramPost(formData);
+}
+
+export async function removeInstagramPost(formData: FormData) {
+  await requireAdmin();
+  await deleteInstagramPost(formData);
+}
+
+export async function saveLocation(formData: FormData) {
+  await requireAdmin();
+  await upsertLocation(formData);
+}
+
+export async function removeLocation(formData: FormData) {
+  await requireAdmin();
+  await deleteLocation(formData);
+}
+
+export async function createAdminUser(
+  _prevState: { error?: string },
+  formData: FormData,
+): Promise<{ error?: string }> {
+  await requireAdmin();
+
+  const name = (formData.get("name") as string | null)?.trim() || null;
+  const email = ((formData.get("email") as string) ?? "").trim().toLowerCase();
+  const password = (formData.get("password") as string) ?? "";
+
+  if (!email) return { error: "El email es requerido." };
+  if (password.length < 8) return { error: "La contraseña debe tener al menos 8 caracteres." };
+
+  try {
+    const passwordHash = await hash(password, 12);
+    await prisma.adminUser.create({ data: { email, name, passwordHash } });
+  } catch (e) {
+    if ((e as { code?: string })?.code === "P2002") {
+      return { error: "Ya existe un usuario con ese email." };
+    }
+    throw e;
+  }
+
+  revalidatePath("/admin/usuarios");
+  return {};
+}
+
+export async function updateAdminUser(
+  _prevState: { error?: string },
+  formData: FormData,
+): Promise<{ error?: string }> {
+  await requireAdmin();
+
+  const id = (formData.get("id") as string) ?? "";
+  const name = (formData.get("name") as string | null)?.trim() || null;
+  const password = (formData.get("password") as string | null)?.trim();
+
+  const data: { name: string | null; passwordHash?: string } = { name };
+
+  if (password) {
+    if (password.length < 8) return { error: "La contraseña debe tener al menos 8 caracteres." };
+    data.passwordHash = await hash(password, 12);
+  }
+
+  await prisma.adminUser.update({ where: { id }, data });
+  revalidatePath("/admin/usuarios");
+  return {};
+}
+
+export async function deleteAdminUser(formData: FormData) {
+  const session = await requireAdmin();
+
+  const id = (formData.get("id") as string) ?? "";
+
+  if (id === session.user?.id) {
+    throw new Error("No puedes eliminar tu propio usuario.");
+  }
+
+  await prisma.adminUser.delete({ where: { id } });
+  revalidatePath("/admin/usuarios");
 }

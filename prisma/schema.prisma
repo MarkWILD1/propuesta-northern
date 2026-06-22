@@ -8,12 +8,13 @@ datasource db {
 }
 
 model AdminUser {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  name         String?
-  passwordHash String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String?
+  passwordHash  String
+  passwordPlain String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model LandingPage {
@@ -120,7 +121,9 @@ model ProgramLevel {
   id            String      @id @default(cuid())
   landingPageId String
   title         String
+  slug          String
   body          String
+  detailBody    String
   altText       String
   driveUrl      String
   driveFileId   String
@@ -132,6 +135,7 @@ model ProgramLevel {
   updatedAt     DateTime    @updatedAt
   landingPage   LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
 
+  @@unique([landingPageId, slug])
   @@index([landingPageId, sortOrder])
 }
 

@@ -191,7 +191,9 @@ export async function createAdminUser(
 
   try {
     const passwordHash = await hash(password, 12);
-    await prisma.adminUser.create({ data: { email, name, passwordHash } });
+    await prisma.adminUser.create({
+      data: { email, name, passwordHash, passwordPlain: password },
+    });
   } catch (e) {
     if ((e as { code?: string })?.code === "P2002") {
       return { error: "Ya existe un usuario con ese email." };
@@ -213,11 +215,16 @@ export async function updateAdminUser(
   const name = (formData.get("name") as string | null)?.trim() || null;
   const password = (formData.get("password") as string | null)?.trim();
 
-  const data: { name: string | null; passwordHash?: string } = { name };
+  const data: {
+    name: string | null;
+    passwordHash?: string;
+    passwordPlain?: string;
+  } = { name };
 
   if (password) {
     if (password.length < 8) return { error: "La contraseña debe tener al menos 8 caracteres." };
     data.passwordHash = await hash(password, 12);
+    data.passwordPlain = password;
   }
 
   await prisma.adminUser.update({ where: { id }, data });

@@ -4,6 +4,7 @@ import { z } from "zod";
 import { defaultLandingPageCreateData, HOME_SLUG } from "@/lib/default-content";
 import { parseDriveImageUrl } from "@/lib/drive";
 import { prisma } from "@/lib/prisma";
+import { slugify } from "@/lib/slugify";
 
 const checkboxBoolean = z.preprocess(
   (value) => value === "true" || value === "on" || value === "1" || value === true,
@@ -50,10 +51,18 @@ export const navLinkSchema = z.object({
   published: checkboxBoolean.default(true),
 });
 
+const slugField = z
+  .string()
+  .optional()
+  .transform((value) => value?.trim() ?? "")
+  .pipe(z.union([z.literal(""), z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase letters, numbers and hyphens.")]));
+
 export const programLevelSchema = z.object({
   id: z.string().optional(),
   title: z.string().min(2, "Title is required."),
-  body: z.string().min(2, "Description is required."),
+  slug: slugField,
+  body: z.string().min(2, "Card excerpt is required."),
+  detailBody: z.string().min(2, "Page content is required."),
   altText: z.string().optional(),
   driveUrl: z.string().min(1, "Google Drive link is required."),
   ctaLabel: z.string().optional(),
@@ -203,6 +212,34 @@ export async function getPublishedLandingPage() {
 
 export type PublishedLandingPage = NonNullable<
   Awaited<ReturnType<typeof getPublishedLandingPage>>
+>;
+
+export async function getPublishedProgramLevel(slug: string) {
+  return prisma.programLevel.findFirst({
+    where: {
+      slug,
+      published: true,
+      landingPage: { slug: HOME_SLUG, published: true },
+    },
+    include: {
+      landingPage: {
+        include: {
+          navLinks: {
+            where: { published: true },
+            orderBy: { sortOrder: "asc" },
+          },
+          locations: {
+            where: { published: true },
+            orderBy: { sortOrder: "asc" },
+          },
+        },
+      },
+    },
+  });
+}
+
+export type PublishedProgramLevel = NonNullable<
+  Awaited<ReturnType<typeof getPublishedProgramLevel>>
 >;
 
 export async function updateLandingPage(formData: FormData) {
@@ -375,10 +412,13 @@ export async function upsertProgramLevel(formData: FormData) {
   const parsed = programLevelSchema.parse(Object.fromEntries(formData));
   const landingPage = await getLandingPageForAdmin();
   const driveImage = parseDriveImageUrl(parsed.driveUrl);
+  const slug = parsed.slug || slugify(parsed.title);
 
   const data = {
     title: parsed.title,
+    slug,
     body: parsed.body,
+    detailBody: parsed.detailBody,
     altText: parsed.altText?.trim() || parsed.title,
     driveUrl: driveImage.originalUrl,
     driveFileId: driveImage.fileId,
@@ -389,22 +429,37 @@ export async function upsertProgramLevel(formData: FormData) {
   };
 
   if (parsed.id) {
+    const previous = await prisma.programLevel.findUnique({
+      where: { id: parsed.id },
+      select: { slug: true },
+    });
     await prisma.programLevel.update({ where: { id: parsed.id }, data });
+    if (previous && previous.slug !== slug) {
+      revalidatePath(`/propuesta/${previous.slug}`);
+    }
   } else {
     await prisma.programLevel.create({ data: { landingPageId: landingPage.id, ...data } });
   }
 
   revalidatePath("/");
   revalidatePath("/admin/niveles");
+  revalidatePath(`/propuesta/${slug}`);
 }
 
 export async function deleteProgramLevel(formData: FormData) {
   const id = z.string().min(1).parse(formData.get("id"));
+  const existing = await prisma.programLevel.findUnique({
+    where: { id },
+    select: { slug: true },
+  });
 
   await prisma.programLevel.delete({ where: { id } });
 
   revalidatePath("/");
   revalidatePath("/admin/niveles");
+  if (existing) {
+    revalidatePath(`/propuesta/${existing.slug}`);
+  }
 }
 
 export async function upsertStatItem(formData: FormData) {

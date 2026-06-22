@@ -185,6 +185,16 @@ img {
   background: var(--surface-soft);
 }
 
+.admin-nav a.is-active {
+  color: #fff;
+  background: var(--title);
+}
+
+.admin-nav a.is-active:hover,
+.admin-nav a.is-active:focus-visible {
+  background: var(--title-dark);
+}
+
 .logout-form {
   display: grid;
   gap: 10px;
@@ -391,6 +401,9 @@ img {
 
 .hero {
   display: block;
+  width: calc(100% - 32px);
+  max-width: none;
+  margin: 0 auto;
   padding: 56px 0 32px;
 }
 
@@ -406,8 +419,8 @@ img {
 
 /* Hero carousel (apple-style) */
 .hero-carousel {
-  --hc-slide-w: 76%;
-  --hc-gap: 20px;
+  --hc-slide-w: 94%;
+  --hc-gap: 16px;
   position: relative;
   outline: none;
   animation: rise-in 700ms ease both;
@@ -842,6 +855,15 @@ img {
   border-radius: var(--radius-md);
   background: var(--surface);
   box-shadow: 0 12px 38px rgba(32, 52, 37, 0.08);
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+
+.level-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 44px rgba(32, 52, 37, 0.12);
 }
 
 .level-card-media {
@@ -882,6 +904,48 @@ img {
 .level-card-body p {
   margin: 0;
   color: var(--text-muted);
+}
+
+.level-detail {
+  display: grid;
+  gap: 24px;
+  padding: 48px 0 72px;
+}
+
+.level-detail-nav {
+  margin-bottom: 8px;
+}
+
+.level-detail-title {
+  margin: 0;
+}
+
+.level-detail-media {
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--surface-soft);
+}
+
+.level-detail-media img,
+.level-detail-media .level-media-placeholder {
+  display: block;
+  width: 100%;
+  max-height: 520px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.level-detail-body {
+  display: grid;
+  gap: 16px;
+  max-width: 68ch;
+}
+
+.level-detail-body p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  line-height: 1.7;
 }
 
 /* Stats band */
@@ -1250,7 +1314,7 @@ a.news-card:focus-visible {
   }
 
   .hero-carousel {
-    --hc-slide-w: 90%;
+    --hc-slide-w: 96%;
     --hc-gap: 12px;
   }
 
@@ -1334,6 +1398,47 @@ a.news-card:focus-visible {
   .site-footer-inner {
     grid-template-columns: 1fr;
     gap: 32px;
+  }
+}
+
+/* WhatsApp floating action button */
+.whatsapp-fab {
+  position: fixed;
+  bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+  right: calc(1.5rem + env(safe-area-inset-right, 0px));
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  box-shadow: 0 8px 24px rgba(31, 92, 42, 0.35);
+  animation: whatsapp-float 2.8s ease-in-out infinite;
+}
+
+.whatsapp-fab:hover {
+  animation-play-state: paused;
+  transform: translateY(-6px) scale(1.08);
+  box-shadow: 0 14px 36px rgba(31, 92, 42, 0.5);
+}
+
+.whatsapp-fab img {
+  display: block;
+  width: 56px;
+  height: 56px;
+}
+
+@keyframes whatsapp-float {
+  0%,
+  100% {
+    transform: translateY(0);
+    box-shadow: 0 8px 20px rgba(31, 92, 42, 0.3);
+  }
+
+  50% {
+    transform: translateY(-10px);
+    box-shadow: 0 18px 36px rgba(31, 92, 42, 0.45);
   }
 }
 
@@ -1487,5 +1592,9 @@ a.news-card:focus-visible {
   .landing-splash__glow {
     animation: none;
     transition: none;
+  }
+
+  .whatsapp-fab {
+    animation: none;
   }
 }

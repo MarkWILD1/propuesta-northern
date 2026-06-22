@@ -8,6 +8,7 @@ import { ProgramLevels } from "@/components/landing/program-levels";
 import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteHeader } from "@/components/landing/site-header";
 import { StatsCounter } from "@/components/landing/stats-counter";
+import { WhatsAppFab } from "@/components/landing/whatsapp-fab";
 import type { PublishedLandingPage } from "@/lib/content";
 
 export function LandingPage({ page }: { page: PublishedLandingPage }) {
@@ -22,7 +23,7 @@ export function LandingPage({ page }: { page: PublishedLandingPage }) {
       />
 
       <main className="landing">
-        <section className="hero page-shell" aria-label="Galeria destacada">
+        <section className="hero" aria-label="Galeria destacada">
           <HeroCarousel slides={page.carouselSlides} />
         </section>
 
@@ -67,6 +68,8 @@ export function LandingPage({ page }: { page: PublishedLandingPage }) {
         contactPhone={page.contactPhone}
         locations={page.locations}
       />
+
+      <WhatsAppFab phone={page.contactPhone} />
     </div>
   );
 }

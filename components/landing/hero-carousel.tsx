@@ -12,7 +12,7 @@ type Slide = {
   driveFileId: string;
 };
 
-const AUTOPLAY_MS = 5000;
+const AUTOPLAY_MS = 3000;
 
 function prefersReducedMotion() {
   if (typeof window === "undefined") {

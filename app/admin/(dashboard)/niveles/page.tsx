@@ -21,7 +21,8 @@ export default async function AdminNivelesPage() {
         <h1 className="display">Propuesta educativa.</h1>
         <p className="muted">
           Tarjetas de niveles educativos (Inicial, Primaria, Secundaria) con
-          imagen de Google Drive.
+          imagen de Google Drive. Al hacer clic en una tarjeta se abre su pagina
+          de detalle en /propuesta/[slug].
         </p>
       </header>
 

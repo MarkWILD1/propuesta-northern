@@ -14,6 +14,7 @@ type AdminUser = {
   id: string;
   name: string | null;
   email: string;
+  passwordPlain: string | null;
 };
 
 function EyeIcon({ open }: { open: boolean }) {
@@ -41,12 +42,16 @@ function PasswordInput({
   required,
   minLength,
   autoComplete,
+  defaultValue,
+  placeholder,
 }: {
   id: string;
   name: string;
   required?: boolean;
   minLength?: number;
   autoComplete?: string;
+  defaultValue?: string;
+  placeholder?: string;
 }) {
   const [visible, setVisible] = useState(false);
 
@@ -59,6 +64,8 @@ function PasswordInput({
         required={required}
         minLength={minLength}
         autoComplete={autoComplete}
+        defaultValue={defaultValue}
+        placeholder={placeholder}
       />
       <button
         type="button"
@@ -139,15 +146,22 @@ export function EditUserForm({ user }: { user: AdminUser }) {
         <input value={user.email} disabled readOnly />
       </div>
       <div className="field">
-        <label htmlFor={`user-password-${user.id}`}>
-          Nueva contraseña (dejar vacío para no cambiar)
-        </label>
+        <label htmlFor={`user-password-${user.id}`}>Contraseña</label>
         <PasswordInput
           id={`user-password-${user.id}`}
           name="password"
           minLength={8}
           autoComplete="new-password"
+          defaultValue={user.passwordPlain ?? ""}
+          placeholder={
+            user.passwordPlain ? undefined : "Sin registro — ingresá una nueva contraseña"
+          }
         />
+        <small className="muted">
+          {user.passwordPlain
+            ? "Visible para administradores. Editá el campo para cambiarla."
+            : "Este usuario fue creado antes del registro de contraseñas. Guardá una nueva para verla aquí."}
+        </small>
       </div>
       {state.error ? <p className="form-error">{state.error}</p> : null}
       <SubmitButton label="Guardar cambios" pendingLabel="Guardando..." />

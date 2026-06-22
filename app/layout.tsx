@@ -16,7 +16,7 @@ const sans = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: "Colegio Northern",
-  description: "Landing institucional administrable para Colegio Northern.",
+  description: "Landing institucional Colegio Northern School.",
 };
 
 export default function RootLayout({

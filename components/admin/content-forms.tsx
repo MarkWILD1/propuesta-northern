@@ -151,8 +151,14 @@ export function LandingPageForm({ page }: { page: LandingPage }) {
           />
         </div>
         <div className="field">
-          <label htmlFor="contactPhone">Telefono</label>
-          <input id="contactPhone" name="contactPhone" defaultValue={page.contactPhone ?? ""} />
+          <label htmlFor="contactPhone">Telefono / WhatsApp</label>
+          <input
+            id="contactPhone"
+            name="contactPhone"
+            defaultValue={page.contactPhone ?? ""}
+            placeholder="+54 9 11 1234-5678"
+          />
+          <small>Se muestra en el footer y en el boton flotante de WhatsApp.</small>
         </div>
       </div>
       <label className="checkbox">

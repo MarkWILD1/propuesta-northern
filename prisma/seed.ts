@@ -12,11 +12,13 @@ async function main() {
     where: { email },
     update: {
       passwordHash,
+      passwordPlain: password,
       name: "Colegio Northern Admin",
     },
     create: {
       email,
       passwordHash,
+      passwordPlain: password,
       name: "Colegio Northern Admin",
     },
   });

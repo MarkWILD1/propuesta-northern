@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminUsuariosPage() {
   const [users, session] = await Promise.all([
     prisma.adminUser.findMany({
-      select: { id: true, name: true, email: true, createdAt: true },
+      select: { id: true, name: true, email: true, passwordPlain: true, createdAt: true },
       orderBy: { createdAt: "asc" },
     }),
     auth(),

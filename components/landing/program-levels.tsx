@@ -1,13 +1,14 @@
+import Link from "next/link";
+
 import { getDriveImageDisplayUrl } from "@/lib/drive";
 
 type ProgramLevel = {
   id: string;
+  slug: string;
   title: string;
   body: string;
   altText: string;
   driveFileId: string;
-  ctaLabel: string | null;
-  ctaHref: string | null;
 };
 
 export function ProgramLevels({
@@ -33,7 +34,11 @@ export function ProgramLevels({
       </h2>
       <div className="levels-grid">
         {levels.map((level) => (
-          <article key={level.id} className="level-card">
+          <Link
+            key={level.id}
+            href={`/propuesta/${level.slug}`}
+            className="level-card"
+          >
             <div className="level-card-media">
               {level.driveFileId ? (
                 <img
@@ -49,13 +54,8 @@ export function ProgramLevels({
             <div className="level-card-body">
               <h3>{level.title}</h3>
               <p>{level.body}</p>
-              {level.ctaLabel && level.ctaHref ? (
-                <a className="text-link" href={level.ctaHref}>
-                  {level.ctaLabel}
-                </a>
-              ) : null}
             </div>
-          </article>
+          </Link>
         ))}
       </div>
     </section>

@@ -364,6 +364,15 @@ img {
   padding: 48px 0;
 }
 
+.login-brand-logo {
+  display: block;
+  width: min(100%, 280px);
+  height: auto;
+  margin-bottom: 24px;
+  object-fit: contain;
+  object-position: left center;
+}
+
 .login-page h1 {
   margin: 0;
   color: var(--title-dark);

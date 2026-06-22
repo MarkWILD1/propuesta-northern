@@ -4,7 +4,14 @@ export default function AdminLoginPage() {
   return (
     <main className="login-page">
       <section>
-        <p className="eyebrow">Colegio Northern Admin</p>
+        <img
+          className="login-brand-logo"
+          src="/logo-northern.png"
+          alt="Northern School"
+          width={1024}
+          height={705}
+        />
+        <p className="eyebrow">Northern School Admin</p>
         <h1 className="display">Ingresar al panel.</h1>
         <p className="muted">
           Usa el usuario administrador creado con el seed para editar la landing,

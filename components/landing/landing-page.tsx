@@ -5,6 +5,7 @@ import { InstagramBand } from "@/components/landing/instagram-band";
 import { NewsGrid } from "@/components/landing/news-grid";
 import { PhotoGallery } from "@/components/landing/photo-gallery";
 import { ProgramLevels } from "@/components/landing/program-levels";
+import { ScrollReveal } from "@/components/landing/scroll-reveal";
 import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteHeader } from "@/components/landing/site-header";
 import { StatsCounter } from "@/components/landing/stats-counter";
@@ -22,7 +23,7 @@ export function LandingPage({ page }: { page: PublishedLandingPage }) {
         ctaHref={page.ctaHref}
       />
 
-      <main className="landing">
+      <ScrollReveal>
         <section className="hero" aria-label="Galeria destacada">
           <HeroCarousel slides={page.carouselSlides} />
         </section>
@@ -58,7 +59,7 @@ export function LandingPage({ page }: { page: PublishedLandingPage }) {
           profileUrl={page.instagramUrl}
           posts={page.instagramPosts}
         />
-      </main>
+      </ScrollReveal>
 
       <SiteFooter
         brand={page.title}

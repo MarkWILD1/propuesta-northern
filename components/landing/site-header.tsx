@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 type NavLink = {
@@ -26,7 +27,7 @@ export function SiteHeader({
   return (
     <header className="site-header">
       <div className="site-header-inner page-shell">
-        <a className="site-brand" href="#top" aria-label={brand}>
+        <Link className="site-brand" href="/" aria-label={brand}>
           <img
             className="site-brand-logo"
             src="/logo-northern.png"
@@ -35,7 +36,7 @@ export function SiteHeader({
             height={705}
           />
           <span className="sr-only">{eyebrow}</span>
-        </a>
+        </Link>
 
         <button
           type="button"

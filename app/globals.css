@@ -1197,7 +1197,7 @@ a.news-card:focus-visible {
 /* Site footer */
 .site-footer {
   color: #fff;
-  background: var(--title-dark);
+  background: #1C3662;
 }
 
 .site-footer-inner {

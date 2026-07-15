@@ -12,14 +12,27 @@ import {
   deleteActivityTab,
   deleteCarouselSlide,
   deleteInstagramPost,
+  deleteInstitutionalProject,
   deleteLocation,
+  deleteMultidisciplinaryTeam,
   deleteNavLink,
   deleteNewsItem,
+  deleteFinalShow,
+  deletePhysicalEducation,
   deletePhoto,
   deleteProgramLevel,
   deleteSection,
   deleteStatItem,
+  deleteTeamVideo,
+  deleteWorkshop,
+  updateFinalShow,
+  updateFooter,
+  updateInstitutionalProject,
+  updateLandingHero,
   updateLandingPage,
+  updateLandingTitle,
+  updateMultidisciplinaryTeam,
+  updatePhysicalEducation,
   upsertActivityTab,
   upsertCarouselSlide,
   upsertInstagramPost,
@@ -30,6 +43,8 @@ import {
   upsertProgramLevel,
   upsertSection,
   upsertStatItem,
+  upsertTeamVideo,
+  upsertWorkshop,
 } from "@/lib/content";
 
 async function requireAdmin() {
@@ -76,6 +91,21 @@ export async function saveLandingPage(formData: FormData) {
   await updateLandingPage(formData);
 }
 
+export async function saveLandingHero(formData: FormData) {
+  await requireAdmin();
+  await updateLandingHero(formData);
+}
+
+export async function saveLandingTitles(formData: FormData) {
+  await requireAdmin();
+  await updateLandingTitle(formData);
+}
+
+export async function saveFooter(formData: FormData) {
+  await requireAdmin();
+  await updateFooter(formData);
+}
+
 export async function saveSection(formData: FormData) {
   await requireAdmin();
   await upsertSection(formData);
@@ -94,6 +124,16 @@ export async function savePhoto(formData: FormData) {
 export async function removePhoto(formData: FormData) {
   await requireAdmin();
   await deletePhoto(formData);
+}
+
+export async function saveWorkshop(formData: FormData) {
+  await requireAdmin();
+  await upsertWorkshop(formData);
+}
+
+export async function removeWorkshop(formData: FormData) {
+  await requireAdmin();
+  await deleteWorkshop(formData);
 }
 
 export async function saveCarouselSlide(formData: FormData) {
@@ -174,6 +214,56 @@ export async function saveLocation(formData: FormData) {
 export async function removeLocation(formData: FormData) {
   await requireAdmin();
   await deleteLocation(formData);
+}
+
+export async function savePhysicalEducation(formData: FormData) {
+  await requireAdmin();
+  await updatePhysicalEducation(formData);
+}
+
+export async function removePhysicalEducation(formData: FormData) {
+  await requireAdmin();
+  await deletePhysicalEducation(formData);
+}
+
+export async function saveMultidisciplinaryTeam(formData: FormData) {
+  await requireAdmin();
+  await updateMultidisciplinaryTeam(formData);
+}
+
+export async function removeMultidisciplinaryTeam(formData: FormData) {
+  await requireAdmin();
+  await deleteMultidisciplinaryTeam(formData);
+}
+
+export async function saveTeamVideo(formData: FormData) {
+  await requireAdmin();
+  await upsertTeamVideo(formData);
+}
+
+export async function removeTeamVideo(formData: FormData) {
+  await requireAdmin();
+  await deleteTeamVideo(formData);
+}
+
+export async function saveInstitutionalProject(formData: FormData) {
+  await requireAdmin();
+  await updateInstitutionalProject(formData);
+}
+
+export async function removeInstitutionalProject(formData: FormData) {
+  await requireAdmin();
+  await deleteInstitutionalProject(formData);
+}
+
+export async function saveFinalShow(formData: FormData) {
+  await requireAdmin();
+  await updateFinalShow(formData);
+}
+
+export async function removeFinalShow(formData: FormData) {
+  await requireAdmin();
+  await deleteFinalShow(formData);
 }
 
 export async function createAdminUser(

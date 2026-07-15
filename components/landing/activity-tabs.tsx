@@ -78,7 +78,12 @@ export function ActivityTabs({
             <h3>{current.title}</h3>
             <p>{current.body}</p>
             {current.ctaLabel && current.ctaHref ? (
-              <a className="text-link" href={current.ctaHref}>
+              <a
+                className="text-link"
+                href={current.ctaHref}
+                target="_blank"
+                rel="noreferrer"
+              >
                 {current.ctaLabel}
               </a>
             ) : null}

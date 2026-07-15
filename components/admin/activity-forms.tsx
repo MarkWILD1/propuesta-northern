@@ -23,15 +23,15 @@ export function ActivityTabForm({
 }) {
   return (
     <form action={saveActivityTab} className="form-card form-grid">
-      <h3>{activity ? "Editar actividad" : "Nueva actividad"}</h3>
+      <h3>{activity ? "Editar lengua" : "Nueva lengua extranjera"}</h3>
       {activity ? <input type="hidden" name="id" value={activity.id} /> : null}
       <div className="field">
-        <label htmlFor={`activity-title-${activity?.id ?? "new"}`}>Titulo de la pestana</label>
+        <label htmlFor={`activity-title-${activity?.id ?? "new"}`}>Título</label>
         <input
           id={`activity-title-${activity?.id ?? "new"}`}
           name="title"
           defaultValue={activity?.title ?? ""}
-          placeholder="Deportes, Actividades, Accion Social"
+          placeholder="Inglés, Portugués, Francés"
           required
         />
       </div>
@@ -46,43 +46,38 @@ export function ActivityTabForm({
       </div>
       <div className="field">
         <label htmlFor={`activity-drive-${activity?.id ?? "new"}`}>
-          Link de Google Drive (opcional)
+          Imagen de Google Drive
         </label>
         <input
           id={`activity-drive-${activity?.id ?? "new"}`}
           name="driveUrl"
           defaultValue={activity?.driveUrl ?? ""}
           placeholder="https://drive.google.com/file/d/.../view"
-        />
-      </div>
-      <div className="field">
-        <label htmlFor={`activity-alt-${activity?.id ?? "new"}`}>Texto alternativo (opcional)</label>
-        <input
-          id={`activity-alt-${activity?.id ?? "new"}`}
-          name="altText"
-          defaultValue={activity?.altText ?? ""}
+          required
         />
       </div>
       <div className="admin-grid">
         <div className="field">
           <label htmlFor={`activity-cta-label-${activity?.id ?? "new"}`}>
-            Texto del boton (opcional)
+            Texto del enlace externo (opcional)
           </label>
           <input
             id={`activity-cta-label-${activity?.id ?? "new"}`}
             name="ctaLabel"
             defaultValue={activity?.ctaLabel ?? ""}
-            placeholder="Leer mas"
+            placeholder="Conocer más"
           />
         </div>
         <div className="field">
           <label htmlFor={`activity-cta-href-${activity?.id ?? "new"}`}>
-            Link del boton (opcional)
+            Link externo (opcional)
           </label>
           <input
             id={`activity-cta-href-${activity?.id ?? "new"}`}
             name="ctaHref"
+            type="url"
             defaultValue={activity?.ctaHref ?? ""}
+            placeholder="https://..."
           />
         </div>
       </div>
@@ -108,7 +103,7 @@ export function ActivityTabForm({
         Publicado
       </label>
       <button className="button" type="submit">
-        {activity ? "Guardar actividad" : "Agregar actividad"}
+        {activity ? "Guardar lengua" : "Agregar lengua"}
       </button>
     </form>
   );

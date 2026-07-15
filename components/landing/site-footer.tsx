@@ -1,24 +1,15 @@
-type Location = {
-  id: string;
-  name: string;
-  addressLines: string;
-  phone: string | null;
-};
-
 export function SiteFooter({
   brand,
   contactTitle,
   contactBody,
   contactEmail,
   contactPhone,
-  locations,
 }: {
   brand: string;
   contactTitle: string;
   contactBody: string;
   contactEmail: string;
   contactPhone: string | null;
-  locations: Location[];
 }) {
   return (
     <footer id="contacto" className="site-footer">
@@ -38,20 +29,6 @@ export function SiteFooter({
             ) : null}
           </div>
         </div>
-
-        {locations.length > 0 ? (
-          <div className="site-footer-locations">
-            {locations.map((location) => (
-              <div key={location.id} className="footer-location">
-                <strong>{location.name}</strong>
-                {location.addressLines.split("\n").map((line, index) => (
-                  <span key={index}>{line}</span>
-                ))}
-                {location.phone ? <span className="footer-phone">{location.phone}</span> : null}
-              </div>
-            ))}
-          </div>
-        ) : null}
       </div>
 
       <div className="site-footer-base page-shell">

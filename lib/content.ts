@@ -11,6 +11,10 @@ const checkboxBoolean = z.preprocess(
   z.boolean(),
 );
 
+const optionalUrl = z
+  .union([z.literal(""), z.string().trim().url("Use a valid URL.")])
+  .optional();
+
 export const landingPageSchema = z.object({
   title: z.string().min(2, "Title is required."),
   eyebrow: z.string().min(2, "Eyebrow is required."),
@@ -31,6 +35,35 @@ export const landingPageSchema = z.object({
   contactEmail: z.string().email("Use a valid email address."),
   contactPhone: z.string().optional(),
   published: checkboxBoolean.default(true),
+});
+
+export const landingHeroSchema = landingPageSchema.pick({
+  title: true,
+  eyebrow: true,
+  heroTitle: true,
+  heroSubtitle: true,
+  published: true,
+});
+
+const landingTitleFields = [
+  "levelsTitle",
+  "statsTitle",
+  "featuredTitle",
+  "activitiesTitle",
+  "galleryTitle",
+  "instagramTitle",
+] as const;
+
+export const landingTitleSchema = z.object({
+  field: z.enum(landingTitleFields),
+  value: z.string().min(2, "Title is required."),
+});
+
+export const footerSchema = landingPageSchema.pick({
+  contactTitle: true,
+  contactBody: true,
+  contactEmail: true,
+  contactPhone: true,
 });
 
 export const sectionSchema = z.object({
@@ -84,9 +117,9 @@ export const activityTabSchema = z.object({
   title: z.string().min(2, "Title is required."),
   body: z.string().min(2, "Description is required."),
   altText: z.string().optional(),
-  driveUrl: z.string().optional(),
+  driveUrl: z.string().min(1, "Google Drive link is required."),
   ctaLabel: z.string().optional(),
-  ctaHref: z.string().optional(),
+  ctaHref: optionalUrl,
   sortOrder: z.coerce.number().int().min(0),
   published: checkboxBoolean.default(true),
 });
@@ -107,8 +140,8 @@ export const instagramPostSchema = z.object({
   id: z.string().optional(),
   caption: z.string().optional(),
   altText: z.string().optional(),
-  driveUrl: z.string().min(1, "Google Drive link is required."),
-  href: z.string().optional(),
+  driveUrl: z.string().optional(),
+  href: z.string().trim().url("Instagram URL is required."),
   sortOrder: z.coerce.number().int().min(0),
   published: checkboxBoolean.default(true),
 });
@@ -118,19 +151,28 @@ export const locationSchema = z.object({
   name: z.string().min(2, "Name is required."),
   addressLines: z.string().min(2, "Address is required."),
   phone: z.string().optional(),
+  body: z.string().optional().default(""),
+  altText: z.string().optional(),
+  driveUrl: z.string().optional(),
+  href: optionalUrl,
   sortOrder: z.coerce.number().int().min(0),
   published: checkboxBoolean.default(true),
 });
 
-export const photoSchema = z.object({
+export const workshopSchema = z.object({
   id: z.string().optional(),
-  title: z.string().min(2, "Photo title is required."),
+  title: z.string().min(2, "Workshop title is required."),
+  body: z.string().optional().default(""),
   altText: z.string().optional(),
   caption: z.string().optional(),
   driveUrl: z.string().min(1, "Google Drive link is required."),
+  href: optionalUrl,
   sortOrder: z.coerce.number().int().min(0),
   published: checkboxBoolean.default(true),
 });
+
+/** @deprecated Use workshopSchema. */
+export const photoSchema = workshopSchema;
 
 export const carouselSlideSchema = z.object({
   id: z.string().optional(),
@@ -142,14 +184,52 @@ export const carouselSlideSchema = z.object({
   published: checkboxBoolean.default(true),
 });
 
+const singletonBaseSchema = z.object({
+  title: z.string().min(2, "Title is required."),
+  body: z.string(),
+  published: checkboxBoolean.default(true),
+});
+
+export const physicalEducationSchema = singletonBaseSchema.extend({
+  altText: z.string().optional(),
+  driveUrl: z.string().min(1, "Google Drive link is required."),
+  ctaLabel: z.string().optional(),
+  ctaHref: optionalUrl,
+});
+
+export const multidisciplinaryTeamSchema = singletonBaseSchema;
+
+export const teamVideoSchema = z.object({
+  id: z.string().optional(),
+  url: z.string().trim().url("Video URL is required."),
+  sortOrder: z.coerce.number().int().min(0),
+  published: checkboxBoolean.default(true),
+});
+
+export const institutionalProjectSchema = singletonBaseSchema.extend({
+  altText: z.string().optional(),
+  driveUrl: z.string().min(1, "Google Drive link is required."),
+});
+
+export const finalShowSchema = z.object({
+  title: z.string().optional().default(""),
+  body: z.string().optional().default(""),
+  eventAt: z
+    .string()
+    .optional()
+    .refine((value) => !value || !Number.isNaN(Date.parse(value)), "Use a valid date."),
+  videoUrl: optionalUrl,
+  published: checkboxBoolean.default(false),
+});
+
 export async function getLandingPageForAdmin() {
-  return prisma.landingPage.upsert({
+  const page = await prisma.landingPage.upsert({
     where: { slug: HOME_SLUG },
     update: {},
     create: defaultLandingPageCreateData(),
     include: {
       sections: { orderBy: { sortOrder: "asc" } },
-      photos: { orderBy: { sortOrder: "asc" } },
+      workshops: { orderBy: { sortOrder: "asc" } },
       carouselSlides: { orderBy: { sortOrder: "asc" } },
       navLinks: { orderBy: { sortOrder: "asc" } },
       programLevels: { orderBy: { sortOrder: "asc" } },
@@ -158,19 +238,36 @@ export async function getLandingPageForAdmin() {
       news: { orderBy: { sortOrder: "asc" } },
       instagramPosts: { orderBy: { sortOrder: "asc" } },
       locations: { orderBy: { sortOrder: "asc" } },
+      physicalEducation: true,
+      multidisciplinaryTeam: {
+        include: { videos: { orderBy: { sortOrder: "asc" } } },
+      },
+      institutionalProject: true,
+      finalShow: true,
     },
   });
+
+  // Temporary compatibility for current pages while the UI adopts workshops.
+  return {
+    ...page,
+    photos: page.workshops,
+    instagramPosts: page.instagramPosts.map((post) => ({
+      ...post,
+      driveUrl: post.driveUrl ?? "",
+      driveFileId: post.driveFileId ?? "",
+    })),
+  };
 }
 
 export async function getPublishedLandingPage() {
-  return prisma.landingPage.findFirst({
+  const page = await prisma.landingPage.findFirst({
     where: { slug: HOME_SLUG, published: true },
     include: {
       sections: {
         where: { published: true },
         orderBy: { sortOrder: "asc" },
       },
-      photos: {
+      workshops: {
         where: { published: true },
         orderBy: { sortOrder: "asc" },
       },
@@ -206,8 +303,33 @@ export async function getPublishedLandingPage() {
         where: { published: true },
         orderBy: { sortOrder: "asc" },
       },
+      physicalEducation: { where: { published: true } },
+      multidisciplinaryTeam: {
+        where: { published: true },
+        include: {
+          videos: {
+            where: { published: true },
+            orderBy: { sortOrder: "asc" },
+          },
+        },
+      },
+      institutionalProject: { where: { published: true } },
+      finalShow: { where: { published: true } },
     },
   });
+
+  if (!page) return null;
+
+  // Temporary compatibility for current landing components.
+  return {
+    ...page,
+    photos: page.workshops,
+    instagramPosts: page.instagramPosts.map((post) => ({
+      ...post,
+      driveUrl: post.driveUrl ?? "",
+      driveFileId: post.driveFileId ?? "",
+    })),
+  };
 }
 
 export type PublishedLandingPage = NonNullable<
@@ -254,6 +376,43 @@ export async function updateLandingPage(formData: FormData) {
   revalidatePath("/admin/content");
 }
 
+export async function updateLandingHero(formData: FormData) {
+  const parsed = landingHeroSchema.parse(Object.fromEntries(formData));
+  await prisma.landingPage.update({
+    where: { slug: HOME_SLUG },
+    data: parsed,
+  });
+  revalidateContentRoutes("/admin/content");
+}
+
+export async function updateLandingTitle(formData: FormData) {
+  const { field, value } = landingTitleSchema.parse(Object.fromEntries(formData));
+  await prisma.landingPage.update({
+    where: { slug: HOME_SLUG },
+    data: { [field]: value },
+  });
+  revalidateContentRoutes(
+    "/admin/niveles",
+    "/admin/estadisticas",
+    "/admin/lo-que-nos-define",
+    "/admin/lenguas-extranjeras",
+    "/admin/talleres",
+    "/admin/mas-alla-del-aula",
+  );
+}
+
+export async function updateFooter(formData: FormData) {
+  const parsed = footerSchema.parse(Object.fromEntries(formData));
+  await prisma.landingPage.update({
+    where: { slug: HOME_SLUG },
+    data: {
+      ...parsed,
+      contactPhone: parsed.contactPhone?.trim() || null,
+    },
+  });
+  revalidateContentRoutes("/admin/footer");
+}
+
 export async function upsertSection(formData: FormData) {
   const parsed = sectionSchema.parse(Object.fromEntries(formData));
   const landingPage = await getLandingPageForAdmin();
@@ -282,7 +441,7 @@ export async function upsertSection(formData: FormData) {
   }
 
   revalidatePath("/");
-  revalidatePath("/admin/content");
+  revalidatePath("/admin/lo-que-nos-define");
 }
 
 export async function deleteSection(formData: FormData) {
@@ -291,31 +450,33 @@ export async function deleteSection(formData: FormData) {
   await prisma.landingSection.delete({ where: { id } });
 
   revalidatePath("/");
-  revalidatePath("/admin/content");
+  revalidatePath("/admin/lo-que-nos-define");
 }
 
-export async function upsertPhoto(formData: FormData) {
-  const parsed = photoSchema.parse(Object.fromEntries(formData));
+export async function upsertWorkshop(formData: FormData) {
+  const parsed = workshopSchema.parse(Object.fromEntries(formData));
   const landingPage = await getLandingPageForAdmin();
   const driveImage = parseDriveImageUrl(parsed.driveUrl);
 
   const data = {
     title: parsed.title,
+    body: parsed.body,
     altText: parsed.altText?.trim() || parsed.title,
     caption: parsed.caption || null,
     driveUrl: driveImage.originalUrl,
     driveFileId: driveImage.fileId,
+    href: parsed.href?.trim() || null,
     sortOrder: parsed.sortOrder,
     published: parsed.published,
   };
 
   if (parsed.id) {
-    await prisma.photo.update({
+    await prisma.workshop.update({
       where: { id: parsed.id },
       data,
     });
   } else {
-    await prisma.photo.create({
+    await prisma.workshop.create({
       data: {
         landingPageId: landingPage.id,
         ...data,
@@ -325,16 +486,23 @@ export async function upsertPhoto(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/admin/photos");
+  revalidatePath("/admin/talleres");
 }
 
-export async function deletePhoto(formData: FormData) {
+export async function deleteWorkshop(formData: FormData) {
   const id = z.string().min(1).parse(formData.get("id"));
 
-  await prisma.photo.delete({ where: { id } });
+  await prisma.workshop.delete({ where: { id } });
 
   revalidatePath("/");
   revalidatePath("/admin/photos");
+  revalidatePath("/admin/talleres");
 }
+
+/** @deprecated Use upsertWorkshop. */
+export const upsertPhoto = upsertWorkshop;
+/** @deprecated Use deleteWorkshop. */
+export const deletePhoto = deleteWorkshop;
 
 export async function upsertCarouselSlide(formData: FormData) {
   const parsed = carouselSlideSchema.parse(Object.fromEntries(formData));
@@ -519,6 +687,7 @@ export async function upsertActivityTab(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/admin/actividades");
+  revalidatePath("/admin/lenguas-extranjeras");
 }
 
 export async function deleteActivityTab(formData: FormData) {
@@ -528,6 +697,7 @@ export async function deleteActivityTab(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/admin/actividades");
+  revalidatePath("/admin/lenguas-extranjeras");
 }
 
 export async function upsertNewsItem(formData: FormData) {
@@ -571,14 +741,13 @@ export async function deleteNewsItem(formData: FormData) {
 export async function upsertInstagramPost(formData: FormData) {
   const parsed = instagramPostSchema.parse(Object.fromEntries(formData));
   const landingPage = await getLandingPageForAdmin();
-  const driveImage = parseDriveImageUrl(parsed.driveUrl);
 
   const data = {
     caption: parsed.caption?.trim() || null,
     altText: parsed.altText?.trim() || parsed.caption?.trim() || "Instagram Northern",
-    driveUrl: driveImage.originalUrl,
-    driveFileId: driveImage.fileId,
-    href: parsed.href?.trim() || null,
+    driveUrl: null,
+    driveFileId: null,
+    href: parsed.href,
     sortOrder: parsed.sortOrder,
     published: parsed.published,
   };
@@ -590,7 +759,7 @@ export async function upsertInstagramPost(formData: FormData) {
   }
 
   revalidatePath("/");
-  revalidatePath("/admin/instagram");
+  revalidatePath("/admin/mas-alla-del-aula");
 }
 
 export async function deleteInstagramPost(formData: FormData) {
@@ -599,17 +768,25 @@ export async function deleteInstagramPost(formData: FormData) {
   await prisma.instagramPost.delete({ where: { id } });
 
   revalidatePath("/");
-  revalidatePath("/admin/instagram");
+  revalidatePath("/admin/mas-alla-del-aula");
 }
 
 export async function upsertLocation(formData: FormData) {
   const parsed = locationSchema.parse(Object.fromEntries(formData));
   const landingPage = await getLandingPageForAdmin();
+  const driveImage = parsed.driveUrl?.trim()
+    ? parseDriveImageUrl(parsed.driveUrl)
+    : null;
 
   const data = {
     name: parsed.name,
     addressLines: parsed.addressLines,
     phone: parsed.phone?.trim() || null,
+    body: parsed.body,
+    altText: parsed.altText?.trim() || parsed.name,
+    driveUrl: driveImage?.originalUrl ?? null,
+    driveFileId: driveImage?.fileId ?? null,
+    href: parsed.href?.trim() || null,
     sortOrder: parsed.sortOrder,
     published: parsed.published,
   };
@@ -622,6 +799,7 @@ export async function upsertLocation(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/admin/sedes");
+  revalidatePath("/admin/locales-y-espacios");
 }
 
 export async function deleteLocation(formData: FormData) {
@@ -631,5 +809,211 @@ export async function deleteLocation(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/admin/sedes");
+  revalidatePath("/admin/locales-y-espacios");
+}
+
+function revalidateContentRoutes(...adminRoutes: string[]) {
+  revalidatePath("/");
+  for (const route of adminRoutes) revalidatePath(route);
+}
+
+function optionalDriveImage(value?: string) {
+  return value?.trim() ? parseDriveImageUrl(value) : null;
+}
+
+export async function getPhysicalEducation() {
+  return prisma.physicalEducation.findFirst({
+    where: { landingPage: { slug: HOME_SLUG } },
+  });
+}
+
+export async function updatePhysicalEducation(formData: FormData) {
+  const parsed = physicalEducationSchema.parse(Object.fromEntries(formData));
+  const landingPage = await getLandingPageForAdmin();
+  const driveImage = optionalDriveImage(parsed.driveUrl);
+  const data = {
+    title: parsed.title,
+    body: parsed.body,
+    altText: parsed.altText?.trim() || parsed.title,
+    driveUrl: driveImage?.originalUrl ?? null,
+    driveFileId: driveImage?.fileId ?? null,
+    ctaLabel: parsed.ctaLabel?.trim() || null,
+    ctaHref: parsed.ctaHref?.trim() || null,
+    published: parsed.published,
+  };
+
+  await prisma.physicalEducation.upsert({
+    where: { landingPageId: landingPage.id },
+    update: data,
+    create: { landingPageId: landingPage.id, ...data },
+  });
+  revalidateContentRoutes("/admin/educacion-fisica");
+}
+
+export const upsertPhysicalEducation = updatePhysicalEducation;
+
+export async function deletePhysicalEducation(formData: FormData) {
+  const id = z.string().min(1).parse(formData.get("id"));
+  await prisma.physicalEducation.delete({ where: { id } });
+  revalidateContentRoutes("/admin/educacion-fisica");
+}
+
+export async function getMultidisciplinaryTeam() {
+  return prisma.multidisciplinaryTeam.findFirst({
+    where: { landingPage: { slug: HOME_SLUG } },
+    include: { videos: { orderBy: { sortOrder: "asc" } } },
+  });
+}
+
+export async function updateMultidisciplinaryTeam(formData: FormData) {
+  const parsed = multidisciplinaryTeamSchema.parse(Object.fromEntries(formData));
+  const landingPage = await getLandingPageForAdmin();
+  const data = {
+    title: parsed.title,
+    body: parsed.body,
+    published: parsed.published,
+  };
+
+  await prisma.multidisciplinaryTeam.upsert({
+    where: { landingPageId: landingPage.id },
+    update: data,
+    create: { landingPageId: landingPage.id, ...data },
+  });
+  revalidateContentRoutes("/admin/equipo-multidisciplinario");
+}
+
+export const upsertMultidisciplinaryTeam = updateMultidisciplinaryTeam;
+
+export async function deleteMultidisciplinaryTeam(formData: FormData) {
+  const id = z.string().min(1).parse(formData.get("id"));
+  await prisma.multidisciplinaryTeam.delete({ where: { id } });
+  revalidateContentRoutes("/admin/equipo-multidisciplinario");
+}
+
+export async function getTeamVideos() {
+  const team = await getMultidisciplinaryTeam();
+  return team?.videos ?? [];
+}
+
+export async function upsertTeamVideo(formData: FormData) {
+  const parsed = teamVideoSchema.parse(Object.fromEntries(formData));
+  const landingPage = await getLandingPageForAdmin();
+
+  await prisma.$transaction(
+    async (transaction) => {
+      const team = await transaction.multidisciplinaryTeam.upsert({
+        where: { landingPageId: landingPage.id },
+        update: {},
+        create: {
+          landingPageId: landingPage.id,
+          title: "Equipo multidisciplinario",
+          body: "",
+          published: false,
+        },
+      });
+      const data = {
+        url: parsed.url,
+        sortOrder: parsed.sortOrder,
+        published: parsed.published,
+      };
+
+      if (parsed.id) {
+        const video = await transaction.teamVideo.findFirst({
+          where: { id: parsed.id, multidisciplinaryTeamId: team.id },
+          select: { id: true },
+        });
+        if (!video) throw new Error("Team video not found.");
+        await transaction.teamVideo.update({ where: { id: video.id }, data });
+        return;
+      }
+
+      const count = await transaction.teamVideo.count({
+        where: { multidisciplinaryTeamId: team.id },
+      });
+      if (count >= 3) {
+        throw new Error("The multidisciplinary team supports at most 3 videos.");
+      }
+      await transaction.teamVideo.create({
+        data: { multidisciplinaryTeamId: team.id, ...data },
+      });
+    },
+    { isolationLevel: "Serializable" },
+  );
+
+  revalidateContentRoutes("/admin/equipo-multidisciplinario");
+}
+
+export async function deleteTeamVideo(formData: FormData) {
+  const id = z.string().min(1).parse(formData.get("id"));
+  await prisma.teamVideo.delete({ where: { id } });
+  revalidateContentRoutes("/admin/equipo-multidisciplinario");
+}
+
+export async function getInstitutionalProject() {
+  return prisma.institutionalProject.findFirst({
+    where: { landingPage: { slug: HOME_SLUG } },
+  });
+}
+
+export async function updateInstitutionalProject(formData: FormData) {
+  const parsed = institutionalProjectSchema.parse(Object.fromEntries(formData));
+  const landingPage = await getLandingPageForAdmin();
+  const driveImage = optionalDriveImage(parsed.driveUrl);
+  const data = {
+    title: parsed.title,
+    body: parsed.body,
+    altText: parsed.altText?.trim() || parsed.title,
+    driveUrl: driveImage?.originalUrl ?? null,
+    driveFileId: driveImage?.fileId ?? null,
+    published: parsed.published,
+  };
+
+  await prisma.institutionalProject.upsert({
+    where: { landingPageId: landingPage.id },
+    update: data,
+    create: { landingPageId: landingPage.id, ...data },
+  });
+  revalidateContentRoutes("/admin/proyecto-institucional");
+}
+
+export const upsertInstitutionalProject = updateInstitutionalProject;
+
+export async function deleteInstitutionalProject(formData: FormData) {
+  const id = z.string().min(1).parse(formData.get("id"));
+  await prisma.institutionalProject.delete({ where: { id } });
+  revalidateContentRoutes("/admin/proyecto-institucional");
+}
+
+export async function getFinalShow() {
+  return prisma.finalShow.findFirst({
+    where: { landingPage: { slug: HOME_SLUG } },
+  });
+}
+
+export async function updateFinalShow(formData: FormData) {
+  const parsed = finalShowSchema.parse(Object.fromEntries(formData));
+  const landingPage = await getLandingPageForAdmin();
+  const data = {
+    title: parsed.title,
+    body: parsed.body,
+    eventAt: parsed.eventAt ? new Date(parsed.eventAt) : null,
+    videoUrl: parsed.videoUrl?.trim() || null,
+    published: parsed.published,
+  };
+
+  await prisma.finalShow.upsert({
+    where: { landingPageId: landingPage.id },
+    update: data,
+    create: { landingPageId: landingPage.id, ...data },
+  });
+  revalidateContentRoutes("/admin/muestra-final");
+}
+
+export const upsertFinalShow = updateFinalShow;
+
+export async function deleteFinalShow(formData: FormData) {
+  const id = z.string().min(1).parse(formData.get("id"));
+  await prisma.finalShow.delete({ where: { id } });
+  revalidateContentRoutes("/admin/muestra-final");
 }
 

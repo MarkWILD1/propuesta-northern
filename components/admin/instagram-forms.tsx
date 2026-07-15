@@ -1,13 +1,9 @@
 import { removeInstagramPost, saveInstagramPost } from "@/app/admin/actions";
-import { getDriveImageDisplayUrl } from "@/lib/drive";
 
 type InstagramPost = {
   id: string;
   caption: string | null;
-  altText: string;
-  driveUrl: string;
-  driveFileId: string;
-  href: string | null;
+  href: string;
   sortOrder: number;
   published: boolean;
 };
@@ -24,16 +20,6 @@ export function InstagramPostForm({
       <h3>{post ? "Editar publicacion" : "Nueva publicacion de Instagram"}</h3>
       {post ? <input type="hidden" name="id" value={post.id} /> : null}
       <div className="field">
-        <label htmlFor={`insta-drive-${post?.id ?? "new"}`}>Imagen de Google Drive</label>
-        <input
-          id={`insta-drive-${post?.id ?? "new"}`}
-          name="driveUrl"
-          defaultValue={post?.driveUrl ?? ""}
-          placeholder="https://drive.google.com/file/d/.../view"
-          required
-        />
-      </div>
-      <div className="field">
         <label htmlFor={`insta-caption-${post?.id ?? "new"}`}>Texto (opcional)</label>
         <input
           id={`insta-caption-${post?.id ?? "new"}`}
@@ -42,20 +28,14 @@ export function InstagramPostForm({
         />
       </div>
       <div className="field">
-        <label htmlFor={`insta-href-${post?.id ?? "new"}`}>Link al post (opcional)</label>
+        <label htmlFor={`insta-href-${post?.id ?? "new"}`}>URL pública del post</label>
         <input
           id={`insta-href-${post?.id ?? "new"}`}
           name="href"
+          type="url"
           defaultValue={post?.href ?? ""}
           placeholder="https://instagram.com/p/..."
-        />
-      </div>
-      <div className="field">
-        <label htmlFor={`insta-alt-${post?.id ?? "new"}`}>Texto alternativo (opcional)</label>
-        <input
-          id={`insta-alt-${post?.id ?? "new"}`}
-          name="altText"
-          defaultValue={post?.altText ?? ""}
+          required
         />
       </div>
       <div className="field">
@@ -88,18 +68,12 @@ export function InstagramPostForm({
 
 export function InstagramPostPreview({ post }: { post: InstagramPost }) {
   return (
-    <figure className="admin-photo-preview">
-      <img
-        src={getDriveImageDisplayUrl(post.driveFileId)}
-        alt={post.altText}
-        loading="lazy"
-        referrerPolicy="no-referrer"
-      />
-      <figcaption>
-        <strong>{post.caption ?? "Instagram"}</strong>
-        <span>{post.published ? "Publicado" : "Oculto"}</span>
-      </figcaption>
-    </figure>
+    <p className="muted">
+      <a href={post.href} target="_blank" rel="noreferrer">
+        {post.caption ?? post.href}
+      </a>{" "}
+      · {post.published ? "Publicado" : "Oculto"}
+    </p>
   );
 }
 

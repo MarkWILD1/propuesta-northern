@@ -13,10 +13,10 @@ export function defaultLandingPageCreateData() {
     levelsTitle: "Una propuesta para cada etapa",
     statsTitle: "Nuestra comunidad en numeros",
     featuredTitle: "Lo que nos define",
-    activitiesTitle: "Vida en el colegio",
-    galleryTitle: "Momentos de la comunidad Northern",
+    activitiesTitle: "Lenguas extranjeras",
+    galleryTitle: "Talleres",
     newsTitle: "Noticias",
-    instagramTitle: "Seguinos en Instagram",
+    instagramTitle: "Más allá del aula",
     instagramUrl: "",
     contactTitle: "Hablemos de la propuesta educativa",
     contactBody:
@@ -112,22 +112,22 @@ export function defaultLandingPageCreateData() {
     activities: {
       create: [
         {
-          title: "Deportes",
-          body: "La educacion fisica y el deporte son esenciales en el proceso formativo, con una amplia variedad de actividades en todos los niveles.",
+          title: "Inglés",
+          body: "Una propuesta sostenida para desarrollar la comunicación oral y escrita en una lengua extranjera.",
           ctaLabel: "Leer mas",
           ctaHref: "#contacto",
           sortOrder: 0,
         },
         {
-          title: "Actividades Extracurriculares",
-          body: "Propuestas optativas en el horario de la tarde que potencian las capacidades unicas de cada estudiante.",
+          title: "Portugués",
+          body: "Experiencias de aprendizaje que acercan a los estudiantes a la lengua y la cultura regional.",
           ctaLabel: "Leer mas",
           ctaHref: "#contacto",
           sortOrder: 1,
         },
         {
-          title: "Accion Social",
-          body: "Programas que promueven la empatia, la solidaridad y el compromiso social en toda la comunidad educativa.",
+          title: "Francés",
+          body: "Un espacio para ampliar horizontes culturales y sumar nuevas herramientas de comunicación.",
           ctaLabel: "Leer mas",
           ctaHref: "#contacto",
           sortOrder: 2,
@@ -162,9 +162,52 @@ export function defaultLandingPageCreateData() {
           name: "Sede Central",
           addressLines: "Av. Northern 1234\nMontevideo\nCod. Postal 11300",
           phone: "(+598) 2000 0000",
+          body: "",
+          altText: "",
+          driveUrl: null,
+          driveFileId: null,
+          href: null,
           sortOrder: 0,
         },
       ],
+    },
+    physicalEducation: {
+      create: {
+        title: "Educación física",
+        body: "",
+        altText: "",
+        driveUrl: null,
+        driveFileId: null,
+        ctaLabel: null,
+        ctaHref: null,
+        published: false,
+      },
+    },
+    multidisciplinaryTeam: {
+      create: {
+        title: "Equipo multidisciplinario",
+        body: "",
+        published: false,
+      },
+    },
+    institutionalProject: {
+      create: {
+        title: "Proyecto institucional",
+        body: "",
+        altText: "",
+        driveUrl: null,
+        driveFileId: null,
+        published: false,
+      },
+    },
+    finalShow: {
+      create: {
+        title: "Muestra final",
+        body: "",
+        eventAt: null,
+        videoUrl: null,
+        published: false,
+      },
     },
   };
 }

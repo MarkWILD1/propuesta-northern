@@ -1,24 +1,10 @@
-import { removeSection, saveLandingPage, saveSection } from "@/app/admin/actions";
+import { removeSection, saveLandingHero, saveSection } from "@/app/admin/actions";
 
 type LandingPage = {
   title: string;
   eyebrow: string;
   heroTitle: string;
   heroSubtitle: string;
-  ctaLabel: string;
-  ctaHref: string;
-  levelsTitle: string;
-  statsTitle: string;
-  featuredTitle: string;
-  activitiesTitle: string;
-  galleryTitle: string;
-  newsTitle: string;
-  instagramTitle: string;
-  instagramUrl: string;
-  contactTitle: string;
-  contactBody: string;
-  contactEmail: string;
-  contactPhone: string | null;
   published: boolean;
   sections: Array<{
     id: string;
@@ -33,7 +19,7 @@ type LandingPage = {
 
 export function LandingPageForm({ page }: { page: LandingPage }) {
   return (
-    <form action={saveLandingPage} className="form-card form-grid">
+    <form action={saveLandingHero} className="form-card form-grid">
       <h2>Landing principal</h2>
       <div className="field">
         <label htmlFor="title">Nombre del sitio</label>
@@ -56,118 +42,13 @@ export function LandingPageForm({ page }: { page: LandingPage }) {
           required
         />
       </div>
-      <div className="admin-grid">
-        <div className="field">
-          <label htmlFor="ctaLabel">Texto CTA</label>
-          <input id="ctaLabel" name="ctaLabel" defaultValue={page.ctaLabel} required />
-        </div>
-        <div className="field">
-          <label htmlFor="ctaHref">Link CTA</label>
-          <input id="ctaHref" name="ctaHref" defaultValue={page.ctaHref} required />
-        </div>
-      </div>
-      <h3>Titulos de las secciones</h3>
-      <div className="admin-grid">
-        <div className="field">
-          <label htmlFor="levelsTitle">Titulo niveles</label>
-          <input id="levelsTitle" name="levelsTitle" defaultValue={page.levelsTitle} required />
-        </div>
-        <div className="field">
-          <label htmlFor="statsTitle">Titulo estadisticas</label>
-          <input id="statsTitle" name="statsTitle" defaultValue={page.statsTitle} required />
-        </div>
-        <div className="field">
-          <label htmlFor="featuredTitle">Titulo destacados</label>
-          <input
-            id="featuredTitle"
-            name="featuredTitle"
-            defaultValue={page.featuredTitle}
-            required
-          />
-        </div>
-        <div className="field">
-          <label htmlFor="activitiesTitle">Titulo actividades</label>
-          <input
-            id="activitiesTitle"
-            name="activitiesTitle"
-            defaultValue={page.activitiesTitle}
-            required
-          />
-        </div>
-        <div className="field">
-          <label htmlFor="galleryTitle">Titulo galeria</label>
-          <input id="galleryTitle" name="galleryTitle" defaultValue={page.galleryTitle} required />
-        </div>
-        <div className="field">
-          <label htmlFor="newsTitle">Titulo noticias</label>
-          <input id="newsTitle" name="newsTitle" defaultValue={page.newsTitle} required />
-        </div>
-        <div className="field">
-          <label htmlFor="instagramTitle">Titulo Instagram</label>
-          <input
-            id="instagramTitle"
-            name="instagramTitle"
-            defaultValue={page.instagramTitle}
-            required
-          />
-        </div>
-        <div className="field">
-          <label htmlFor="instagramUrl">Link Instagram (opcional)</label>
-          <input
-            id="instagramUrl"
-            name="instagramUrl"
-            defaultValue={page.instagramUrl}
-            placeholder="https://instagram.com/..."
-          />
-        </div>
-      </div>
-      <div className="field">
-        <label htmlFor="contactTitle">Titulo contacto</label>
-        <input
-          id="contactTitle"
-          name="contactTitle"
-          defaultValue={page.contactTitle}
-          required
-        />
-      </div>
-      <div className="field">
-        <label htmlFor="contactBody">Texto contacto</label>
-        <textarea
-          id="contactBody"
-          name="contactBody"
-          defaultValue={page.contactBody}
-          required
-        />
-      </div>
-      <div className="admin-grid">
-        <div className="field">
-          <label htmlFor="contactEmail">Email contacto</label>
-          <input
-            id="contactEmail"
-            name="contactEmail"
-            type="email"
-            defaultValue={page.contactEmail}
-            required
-          />
-        </div>
-        <div className="field">
-          <label htmlFor="contactPhone">Telefono / WhatsApp</label>
-          <input
-            id="contactPhone"
-            name="contactPhone"
-            defaultValue={page.contactPhone ?? ""}
-            placeholder="+54 9 11 1234-5678"
-          />
-          <small>Se muestra en el footer y en el boton flotante de WhatsApp.</small>
-        </div>
-      </div>
       <label className="checkbox">
         <input type="hidden" name="published" value="false" />
         <input type="checkbox" name="published" value="true" defaultChecked={page.published} />
         Landing publicada
       </label>
       <button className="button" type="submit">
-        Guardar landing
+        Guardar contenido
       </button>
     </form>
   );

@@ -1,11 +1,9 @@
-import { getDriveImageDisplayUrl } from "@/lib/drive";
+import { parseInstagramUrl } from "@/lib/embeds";
 
 type InstagramPost = {
   id: string;
   caption: string | null;
-  altText: string;
-  driveFileId: string;
-  href: string | null;
+  href: string;
 };
 
 export function InstagramBand({
@@ -17,12 +15,18 @@ export function InstagramBand({
   profileUrl: string;
   posts: InstagramPost[];
 }) {
-  if (posts.length === 0) {
+  const embeds = posts
+    .map((post) => ({ post, embed: parseInstagramUrl(post.href) }))
+    .filter((item): item is { post: InstagramPost; embed: NonNullable<ReturnType<typeof parseInstagramUrl>> } =>
+      Boolean(item.embed),
+    );
+
+  if (embeds.length === 0) {
     return null;
   }
 
   return (
-    <section className="instagram-band page-shell" aria-labelledby="instagram-title">
+    <section id="mas-alla-del-aula" className="instagram-band page-shell" aria-labelledby="instagram-title">
       <div className="instagram-head">
         <p className="section-kicker">Comunidad</p>
         <h2 id="instagram-title" className="display">
@@ -34,27 +38,20 @@ export function InstagramBand({
           </a>
         ) : null}
       </div>
-      <div className="instagram-grid">
-        {posts.map((post) => {
-          const Wrapper = post.href ? "a" : "div";
-          return (
-            <Wrapper
-              key={post.id}
-              className="instagram-item"
-              {...(post.href
-                ? { href: post.href, target: "_blank", rel: "noreferrer" }
-                : {})}
-            >
-              <img
-                src={getDriveImageDisplayUrl(post.driveFileId)}
-                alt={post.altText}
-                loading="lazy"
-                referrerPolicy="no-referrer"
-              />
-              {post.caption ? <span className="instagram-caption">{post.caption}</span> : null}
-            </Wrapper>
-          );
-        })}
+      <div className="instagram-embeds">
+        {embeds.map(({ post, embed }) => (
+          <figure key={post.id} className="instagram-embed">
+            <iframe
+              src={embed.embedUrl}
+              title={post.caption ?? "Publicación de Instagram"}
+              loading="lazy"
+              allowFullScreen
+              referrerPolicy="no-referrer"
+              scrolling="no"
+            />
+            {post.caption ? <figcaption>{post.caption}</figcaption> : null}
+          </figure>
+        ))}
       </div>
     </section>
   );

@@ -1,4 +1,5 @@
 import { DeleteStatItemForm, StatItemForm } from "@/components/admin/stat-forms";
+import { LandingTitleForm } from "@/components/admin/landing-title-form";
 import { getLandingPageForAdmin } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
@@ -21,6 +22,7 @@ export default async function AdminEstadisticasPage() {
         </p>
       </header>
 
+      <LandingTitleForm field="statsTitle" value={page.statsTitle} />
       <StatItemForm nextSortOrder={nextSortOrder} />
 
       <section className="admin-grid" aria-label="Estadisticas guardadas">

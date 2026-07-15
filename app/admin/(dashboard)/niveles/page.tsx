@@ -3,6 +3,7 @@ import {
   ProgramLevelForm,
   ProgramLevelPreview,
 } from "@/components/admin/level-forms";
+import { LandingTitleForm } from "@/components/admin/landing-title-form";
 import { getLandingPageForAdmin } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
@@ -17,7 +18,7 @@ export default async function AdminNivelesPage() {
   return (
     <div className="stack">
       <header className="admin-header">
-        <p className="eyebrow">Niveles</p>
+        <p className="eyebrow">Misión y Visión</p>
         <h1 className="display">Propuesta educativa.</h1>
         <p className="muted">
           Tarjetas de niveles educativos (Inicial, Primaria, Secundaria) con
@@ -26,6 +27,7 @@ export default async function AdminNivelesPage() {
         </p>
       </header>
 
+      <LandingTitleForm field="levelsTitle" value={page.levelsTitle} />
       <ProgramLevelForm nextSortOrder={nextSortOrder} />
 
       <section className="admin-grid" aria-label="Niveles guardados">

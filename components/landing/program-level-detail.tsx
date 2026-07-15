@@ -11,13 +11,7 @@ export function ProgramLevelDetail({ level }: { level: PublishedProgramLevel }) 
 
   return (
     <div id="top">
-      <SiteHeader
-        brand={page.title}
-        eyebrow={page.eyebrow}
-        links={page.navLinks}
-        ctaLabel={page.ctaLabel}
-        ctaHref={page.ctaHref}
-      />
+      <SiteHeader brand={page.title} eyebrow={page.eyebrow} />
 
       <main className="landing">
         <article className="level-detail page-shell">
@@ -66,7 +60,6 @@ export function ProgramLevelDetail({ level }: { level: PublishedProgramLevel }) 
         contactBody={page.contactBody}
         contactEmail={page.contactEmail}
         contactPhone={page.contactPhone}
-        locations={page.locations}
       />
 
       <WhatsAppFab phone={page.contactPhone} />

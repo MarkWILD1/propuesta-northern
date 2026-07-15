@@ -18,39 +18,43 @@ model AdminUser {
 }
 
 model LandingPage {
-  id              String           @id @default(cuid())
-  slug            String           @unique @default("home")
-  title           String
-  eyebrow         String
-  heroTitle       String
-  heroSubtitle    String
-  ctaLabel        String
-  ctaHref         String
-  levelsTitle     String           @default("Propuesta educativa")
-  statsTitle      String           @default("Nuestra comunidad en numeros")
-  featuredTitle   String           @default("Lo que nos define")
-  activitiesTitle String           @default("Vida en el colegio")
-  galleryTitle    String           @default("Momentos de la comunidad Northern")
-  newsTitle       String           @default("Noticias")
-  instagramTitle  String           @default("Seguinos en Instagram")
-  instagramUrl    String           @default("")
-  contactTitle    String
-  contactBody     String
-  contactEmail    String
-  contactPhone    String?
-  published       Boolean          @default(true)
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  sections        LandingSection[]
-  photos          Photo[]
-  carouselSlides  CarouselSlide[]
-  navLinks        NavLink[]
-  programLevels   ProgramLevel[]
-  stats           StatItem[]
-  activities      ActivityTab[]
-  news            NewsItem[]
-  instagramPosts  InstagramPost[]
-  locations       Location[]
+  id                    String                 @id @default(cuid())
+  slug                  String                 @unique @default("home")
+  title                 String
+  eyebrow               String
+  heroTitle             String
+  heroSubtitle          String
+  ctaLabel              String
+  ctaHref               String
+  levelsTitle           String                 @default("Propuesta educativa")
+  statsTitle            String                 @default("Nuestra comunidad en numeros")
+  featuredTitle         String                 @default("Lo que nos define")
+  activitiesTitle       String                 @default("Vida en el colegio")
+  galleryTitle          String                 @default("Momentos de la comunidad Northern")
+  newsTitle             String                 @default("Noticias")
+  instagramTitle        String                 @default("Seguinos en Instagram")
+  instagramUrl          String                 @default("")
+  contactTitle          String
+  contactBody           String
+  contactEmail          String
+  contactPhone          String?
+  published             Boolean                @default(true)
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  sections              LandingSection[]
+  workshops             Workshop[]
+  carouselSlides        CarouselSlide[]
+  navLinks              NavLink[]
+  programLevels         ProgramLevel[]
+  stats                 StatItem[]
+  activities            ActivityTab[]
+  news                  NewsItem[]
+  instagramPosts        InstagramPost[]
+  locations             Location[]
+  physicalEducation     PhysicalEducation?
+  multidisciplinaryTeam MultidisciplinaryTeam?
+  institutionalProject  InstitutionalProject?
+  finalShow             FinalShow?
 }
 
 model LandingSection {
@@ -69,14 +73,16 @@ model LandingSection {
   @@index([landingPageId, sortOrder])
 }
 
-model Photo {
+model Workshop {
   id            String      @id @default(cuid())
   landingPageId String
   title         String
+  body          String      @default("")
   altText       String
   caption       String?
   driveUrl      String
   driveFileId   String
+  href          String?
   sortOrder     Int
   published     Boolean     @default(true)
   createdAt     DateTime    @default(now())
@@ -84,6 +90,7 @@ model Photo {
   landingPage   LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
 
   @@index([landingPageId, sortOrder])
+  @@map("Photo")
 }
 
 model CarouselSlide {
@@ -195,10 +202,10 @@ model InstagramPost {
   id            String      @id @default(cuid())
   landingPageId String
   caption       String?
-  altText       String
-  driveUrl      String
-  driveFileId   String
-  href          String?
+  altText       String      @default("")
+  driveUrl      String?
+  driveFileId   String?
+  href          String
   sortOrder     Int
   published     Boolean     @default(true)
   createdAt     DateTime    @default(now())
@@ -214,6 +221,11 @@ model Location {
   name          String
   addressLines  String
   phone         String?
+  body          String      @default("")
+  altText       String      @default("")
+  driveUrl      String?
+  driveFileId   String?
+  href          String?
   sortOrder     Int
   published     Boolean     @default(true)
   createdAt     DateTime    @default(now())
@@ -221,4 +233,72 @@ model Location {
   landingPage   LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
 
   @@index([landingPageId, sortOrder])
+}
+
+model PhysicalEducation {
+  id            String      @id @default(cuid())
+  landingPageId String      @unique
+  title         String
+  body          String
+  altText       String      @default("")
+  driveUrl      String?
+  driveFileId   String?
+  ctaLabel      String?
+  ctaHref       String?
+  published     Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  landingPage   LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
+}
+
+model MultidisciplinaryTeam {
+  id            String      @id @default(cuid())
+  landingPageId String      @unique
+  title         String
+  body          String
+  published     Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  landingPage   LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
+  videos        TeamVideo[]
+}
+
+model TeamVideo {
+  id                      String                @id @default(cuid())
+  multidisciplinaryTeamId String
+  url                     String
+  sortOrder               Int
+  published               Boolean               @default(true)
+  createdAt               DateTime              @default(now())
+  updatedAt               DateTime              @updatedAt
+  multidisciplinaryTeam   MultidisciplinaryTeam @relation(fields: [multidisciplinaryTeamId], references: [id], onDelete: Cascade)
+
+  @@index([multidisciplinaryTeamId, sortOrder])
+}
+
+model InstitutionalProject {
+  id            String      @id @default(cuid())
+  landingPageId String      @unique
+  title         String
+  body          String
+  altText       String      @default("")
+  driveUrl      String?
+  driveFileId   String?
+  published     Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  landingPage   LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
+}
+
+model FinalShow {
+  id            String      @id @default(cuid())
+  landingPageId String      @unique
+  title         String
+  body          String
+  eventAt       DateTime?
+  videoUrl      String?
+  published     Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  landingPage   LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
 }

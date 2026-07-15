@@ -5,6 +5,10 @@ type Location = {
   name: string;
   addressLines: string;
   phone: string | null;
+  body: string;
+  altText: string;
+  driveUrl: string | null;
+  href: string | null;
   sortOrder: number;
   published: boolean;
 };
@@ -18,7 +22,7 @@ export function LocationForm({
 }) {
   return (
     <form action={saveLocation} className="form-card form-grid">
-      <h3>{location ? "Editar sede" : "Nueva sede"}</h3>
+      <h3>{location ? "Editar local o espacio" : "Nuevo local o espacio"}</h3>
       {location ? <input type="hidden" name="id" value={location.id} /> : null}
       <div className="field">
         <label htmlFor={`location-name-${location?.id ?? "new"}`}>Nombre</label>
@@ -31,6 +35,41 @@ export function LocationForm({
         />
       </div>
       <div className="field">
+        <label htmlFor={`location-body-${location?.id ?? "new"}`}>Texto</label>
+        <textarea
+          id={`location-body-${location?.id ?? "new"}`}
+          name="body"
+          defaultValue={location?.body ?? ""}
+        />
+      </div>
+      <div className="field">
+        <label htmlFor={`location-drive-${location?.id ?? "new"}`}>Imagen de Google Drive</label>
+        <input
+          id={`location-drive-${location?.id ?? "new"}`}
+          name="driveUrl"
+          defaultValue={location?.driveUrl ?? ""}
+          placeholder="https://drive.google.com/file/d/.../view"
+        />
+      </div>
+      <div className="field">
+        <label htmlFor={`location-alt-${location?.id ?? "new"}`}>Texto alternativo</label>
+        <input
+          id={`location-alt-${location?.id ?? "new"}`}
+          name="altText"
+          defaultValue={location?.altText ?? ""}
+        />
+      </div>
+      <div className="field">
+        <label htmlFor={`location-href-${location?.id ?? "new"}`}>Link (opcional)</label>
+        <input
+          id={`location-href-${location?.id ?? "new"}`}
+          name="href"
+          type="url"
+          defaultValue={location?.href ?? ""}
+          placeholder="https://..."
+        />
+      </div>
+      <div className="field">
         <label htmlFor={`location-address-${location?.id ?? "new"}`}>
           Direccion (una linea por renglon)
         </label>
@@ -38,7 +77,7 @@ export function LocationForm({
           id={`location-address-${location?.id ?? "new"}`}
           name="addressLines"
           defaultValue={location?.addressLines ?? ""}
-          placeholder={"Av. Ejemplo 1234\nMontevideo\nCod. Postal 11300"}
+          placeholder={"Av. Ejemplo 1234\nRivera\nCod. Postal 40000"}
           required
         />
       </div>
@@ -72,7 +111,7 @@ export function LocationForm({
         Publicado
       </label>
       <button className="button" type="submit">
-        {location ? "Guardar sede" : "Agregar sede"}
+        {location ? "Guardar espacio" : "Agregar espacio"}
       </button>
     </form>
   );

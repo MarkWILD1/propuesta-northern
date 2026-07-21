@@ -64,7 +64,7 @@ export function NewsItemForm({
       </div>
       <div className="field">
         <label htmlFor={`news-drive-${news?.id ?? "new"}`}>
-          Imagen de Google Drive (opcional)
+          Imagen - Link público de google Drive (opcional)
         </label>
         <input
           id={`news-drive-${news?.id ?? "new"}`}

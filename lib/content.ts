@@ -176,7 +176,7 @@ export const photoSchema = workshopSchema;
 
 export const carouselSlideSchema = z.object({
   id: z.string().optional(),
-  title: z.string().min(2, "Slide title is required."),
+  title: z.string().optional().default(""),
   altText: z.string().optional(),
   caption: z.string().optional(),
   driveUrl: z.string().min(1, "Google Drive link is required."),
@@ -509,9 +509,10 @@ export async function upsertCarouselSlide(formData: FormData) {
   const landingPage = await getLandingPageForAdmin();
   const driveImage = parseDriveImageUrl(parsed.driveUrl);
 
+  const title = parsed.title.trim();
   const data = {
-    title: parsed.title,
-    altText: parsed.altText?.trim() || parsed.title,
+    title,
+    altText: parsed.altText?.trim() || title || "Imagen del carrusel",
     caption: parsed.caption || null,
     driveUrl: driveImage.originalUrl,
     driveFileId: driveImage.fileId,

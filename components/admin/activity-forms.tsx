@@ -46,7 +46,7 @@ export function ActivityTabForm({
       </div>
       <div className="field">
         <label htmlFor={`activity-drive-${activity?.id ?? "new"}`}>
-          Imagen de Google Drive
+          Imagen - Link público de google Drive
         </label>
         <input
           id={`activity-drive-${activity?.id ?? "new"}`}

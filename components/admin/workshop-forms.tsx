@@ -34,7 +34,7 @@ export function WorkshopForm({
         <textarea id={`workshop-body-${suffix}`} name="body" defaultValue={workshop?.body ?? ""} />
       </div>
       <div className="field">
-        <label htmlFor={`workshop-drive-${suffix}`}>Imagen de Google Drive</label>
+        <label htmlFor={`workshop-drive-${suffix}`}>Imagen - Link público de google Drive</label>
         <input
           id={`workshop-drive-${suffix}`}
           name="driveUrl"

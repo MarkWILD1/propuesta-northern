@@ -43,7 +43,7 @@ export function LocationForm({
         />
       </div>
       <div className="field">
-        <label htmlFor={`location-drive-${location?.id ?? "new"}`}>Imagen de Google Drive</label>
+        <label htmlFor={`location-drive-${location?.id ?? "new"}`}>Imagen - Link público de google Drive</label>
         <input
           id={`location-drive-${location?.id ?? "new"}`}
           name="driveUrl"

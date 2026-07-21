@@ -124,10 +124,12 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
                   draggable={false}
                   referrerPolicy="no-referrer"
                 />
-                <div className="hc-overlay">
-                  <strong>{slide.title}</strong>
-                  {slide.caption ? <span>{slide.caption}</span> : null}
-                </div>
+                {slide.title || slide.caption ? (
+                  <div className="hc-overlay">
+                    {slide.title ? <strong>{slide.title}</strong> : null}
+                    {slide.caption ? <span>{slide.caption}</span> : null}
+                  </div>
+                ) : null}
               </li>
             );
           })}

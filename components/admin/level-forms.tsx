@@ -90,7 +90,7 @@ export function ProgramLevelForm({
         />
       </div>
       <div className="field">
-        <label htmlFor={`level-drive-${level?.id ?? "new"}`}>Link publico de Google Drive</label>
+        <label htmlFor={`level-drive-${level?.id ?? "new"}`}>Imagen - Link público de google Drive</label>
         <input
           id={`level-drive-${level?.id ?? "new"}`}
           name="driveUrl"

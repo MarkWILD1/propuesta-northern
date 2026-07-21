@@ -24,12 +24,11 @@ export function CarouselSlideForm({
       <h3>{slide ? "Editar slide" : "Nuevo slide del carrusel"}</h3>
       {slide ? <input type="hidden" name="id" value={slide.id} /> : null}
       <div className="field">
-        <label htmlFor={`slide-title-${slide?.id ?? "new"}`}>Titulo</label>
+        <label htmlFor={`slide-title-${slide?.id ?? "new"}`}>Titulo (opcional)</label>
         <input
           id={`slide-title-${slide?.id ?? "new"}`}
           name="title"
           defaultValue={slide?.title ?? ""}
-          required
         />
       </div>
       <div className="field">
@@ -40,7 +39,7 @@ export function CarouselSlideForm({
           defaultValue={slide?.altText ?? ""}
         />
         <small className="muted">
-          Describe la imagen para accesibilidad. Si lo dejas vacio se usa el titulo.
+          Describe la imagen para accesibilidad. Si lo dejas vacio se usa el titulo o un texto por defecto.
         </small>
       </div>
       <div className="field">
@@ -52,7 +51,7 @@ export function CarouselSlideForm({
         />
       </div>
       <div className="field">
-        <label htmlFor={`slide-drive-${slide?.id ?? "new"}`}>Link publico de Google Drive</label>
+        <label htmlFor={`slide-drive-${slide?.id ?? "new"}`}>Imagen - Link público de google Drive</label>
         <input
           id={`slide-drive-${slide?.id ?? "new"}`}
           name="driveUrl"
@@ -102,7 +101,7 @@ export function CarouselSlidePreview({ slide }: { slide: CarouselSlide }) {
         referrerPolicy="no-referrer"
       />
       <figcaption>
-        <strong>{slide.title}</strong>
+        <strong>{slide.title || "Sin titulo"}</strong>
         <span>{slide.published ? "Publicado" : "Oculto"}</span>
       </figcaption>
     </figure>

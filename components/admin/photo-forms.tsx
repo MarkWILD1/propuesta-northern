@@ -52,7 +52,7 @@ export function PhotoForm({
         />
       </div>
       <div className="field">
-        <label htmlFor={`photo-drive-${photo?.id ?? "new"}`}>Link publico de Google Drive</label>
+        <label htmlFor={`photo-drive-${photo?.id ?? "new"}`}>Imagen - Link público de google Drive</label>
         <input
           id={`photo-drive-${photo?.id ?? "new"}`}
           name="driveUrl"

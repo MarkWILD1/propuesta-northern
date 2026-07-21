@@ -188,7 +188,7 @@ function TextFields({
 function ImageFields({ content }: { content: ImageSingleton | null }) {
   return (
     <>
-      <Field label="Imagen de Google Drive" name="driveUrl" value={content?.driveUrl} required />
+      <Field label="Imagen - Link público de google Drive" name="driveUrl" value={content?.driveUrl} required />
       <Field label="Texto alternativo" name="altText" value={content?.altText} />
     </>
   );

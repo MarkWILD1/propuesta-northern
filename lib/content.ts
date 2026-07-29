@@ -3,6 +3,13 @@ import { z } from "zod";
 
 import { defaultLandingPageCreateData, HOME_SLUG } from "@/lib/default-content";
 import { parseDriveImageUrl } from "@/lib/drive";
+import {
+  ANNOUNCEMENT_LINK_TYPES,
+  contentPageHref,
+  isExternalHref,
+  LANDING_SECTION_HREFS,
+  NAV_LINK_TYPES,
+} from "@/lib/landing-sections";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slugify";
 
@@ -76,19 +83,159 @@ export const sectionSchema = z.object({
   published: checkboxBoolean.default(true),
 });
 
-export const navLinkSchema = z.object({
-  id: z.string().optional(),
-  label: z.string().min(1, "Label is required."),
-  href: z.string().min(1, "Link is required."),
-  sortOrder: z.coerce.number().int().min(0),
-  published: checkboxBoolean.default(true),
-});
+const externalHrefField = z
+  .string()
+  .trim()
+  .min(1, "External link is required.")
+  .refine(isExternalHref, "Use a full URL starting with https://");
+
+const sectionHrefField = z
+  .string()
+  .trim()
+  .refine(
+    (value) => (LANDING_SECTION_HREFS as readonly string[]).includes(value),
+    "Choose a landing section.",
+  );
+
+const pageSlugField = z
+  .string()
+  .trim()
+  .min(1, "Choose a page.")
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Choose a page.");
+
+function resolveLinkDestination(
+  linkType: "SECTION" | "PAGE" | "EXTERNAL",
+  value: {
+    sectionHref?: string;
+    pageSlug?: string;
+    externalHref?: string;
+  },
+  ctx: z.RefinementCtx,
+) {
+  if (linkType === "EXTERNAL") {
+    const parsedHref = externalHrefField.safeParse(value.externalHref);
+    if (!parsedHref.success) {
+      for (const issue of parsedHref.error.issues) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["externalHref"],
+          message: issue.message,
+        });
+      }
+      return null;
+    }
+    return parsedHref.data;
+  }
+
+  if (linkType === "PAGE") {
+    const parsedSlug = pageSlugField.safeParse(value.pageSlug);
+    if (!parsedSlug.success) {
+      for (const issue of parsedSlug.error.issues) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["pageSlug"],
+          message: issue.message,
+        });
+      }
+      return null;
+    }
+    return contentPageHref(parsedSlug.data);
+  }
+
+  const parsedHref = sectionHrefField.safeParse(value.sectionHref);
+  if (!parsedHref.success) {
+    for (const issue of parsedHref.error.issues) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["sectionHref"],
+        message: issue.message,
+      });
+    }
+    return null;
+  }
+  return parsedHref.data;
+}
+
+export const navLinkSchema = z
+  .object({
+    id: z.string().optional(),
+    label: z.string().min(1, "Label is required."),
+    linkType: z.enum(NAV_LINK_TYPES).default("SECTION"),
+    sectionHref: z.string().optional().default(""),
+    pageSlug: z.string().optional().default(""),
+    externalHref: z.string().optional().default(""),
+    openInNewTab: checkboxBoolean.default(false),
+    highlight: checkboxBoolean.default(false),
+    sortOrder: z.coerce.number().int().min(0),
+    published: checkboxBoolean.default(true),
+  })
+  .transform((value, ctx) => {
+    const href = resolveLinkDestination(value.linkType, value, ctx);
+    if (!href) return z.NEVER;
+
+    return {
+      id: value.id,
+      label: value.label,
+      href,
+      linkType: value.linkType,
+      openInNewTab: value.linkType === "EXTERNAL" ? value.openInNewTab : false,
+      highlight: value.highlight,
+      sortOrder: value.sortOrder,
+      published: value.published,
+    };
+  });
+
+export const announcementBarSchema = z
+  .object({
+    message: z.string().trim().min(2, "Message is required."),
+    linkLabel: z.string().optional().default(""),
+    linkType: z.enum(ANNOUNCEMENT_LINK_TYPES).default("NONE"),
+    sectionHref: z.string().optional().default(""),
+    pageSlug: z.string().optional().default(""),
+    externalHref: z.string().optional().default(""),
+    openInNewTab: checkboxBoolean.default(false),
+    dismissible: checkboxBoolean.default(true),
+    published: checkboxBoolean.default(false),
+  })
+  .transform((value, ctx) => {
+    const base = {
+      message: value.message,
+      linkLabel: value.linkLabel.trim() || null,
+      linkType: value.linkType,
+      dismissible: value.dismissible,
+      published: value.published,
+    };
+
+    if (value.linkType === "NONE") {
+      return { ...base, href: null, openInNewTab: false };
+    }
+
+    const href = resolveLinkDestination(value.linkType, value, ctx);
+    if (!href) return z.NEVER;
+
+    return {
+      ...base,
+      href,
+      openInNewTab: value.linkType === "EXTERNAL" ? value.openInNewTab : false,
+    };
+  });
 
 const slugField = z
   .string()
   .optional()
   .transform((value) => value?.trim() ?? "")
   .pipe(z.union([z.literal(""), z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase letters, numbers and hyphens.")]));
+
+export const contentPageSchema = z.object({
+  id: z.string().optional(),
+  title: z.string().min(2, "Title is required."),
+  slug: slugField,
+  body: z.string().min(2, "Page content is required."),
+  altText: z.string().optional(),
+  driveUrl: z.string().optional().default(""),
+  sortOrder: z.coerce.number().int().min(0),
+  published: checkboxBoolean.default(true),
+});
 
 export const programLevelSchema = z.object({
   id: z.string().optional(),
@@ -244,6 +391,8 @@ export async function getLandingPageForAdmin() {
       },
       institutionalProject: true,
       finalShow: true,
+      announcementBar: true,
+      contentPages: { orderBy: { sortOrder: "asc" } },
     },
   });
 
@@ -315,6 +464,7 @@ export async function getPublishedLandingPage() {
       },
       institutionalProject: { where: { published: true } },
       finalShow: { where: { published: true } },
+      announcementBar: { where: { published: true } },
     },
   });
 
@@ -354,6 +504,7 @@ export async function getPublishedProgramLevel(slug: string) {
             where: { published: true },
             orderBy: { sortOrder: "asc" },
           },
+          announcementBar: { where: { published: true } },
         },
       },
     },
@@ -362,6 +513,31 @@ export async function getPublishedProgramLevel(slug: string) {
 
 export type PublishedProgramLevel = NonNullable<
   Awaited<ReturnType<typeof getPublishedProgramLevel>>
+>;
+
+export async function getPublishedContentPage(slug: string) {
+  return prisma.contentPage.findFirst({
+    where: {
+      slug,
+      published: true,
+      landingPage: { slug: HOME_SLUG, published: true },
+    },
+    include: {
+      landingPage: {
+        include: {
+          navLinks: {
+            where: { published: true },
+            orderBy: { sortOrder: "asc" },
+          },
+          announcementBar: { where: { published: true } },
+        },
+      },
+    },
+  });
+}
+
+export type PublishedContentPage = NonNullable<
+  Awaited<ReturnType<typeof getPublishedContentPage>>
 >;
 
 export async function updateLandingPage(formData: FormData) {
@@ -554,6 +730,9 @@ export async function upsertNavLink(formData: FormData) {
   const data = {
     label: parsed.label,
     href: parsed.href,
+    linkType: parsed.linkType,
+    openInNewTab: parsed.openInNewTab,
+    highlight: parsed.highlight,
     sortOrder: parsed.sortOrder,
     published: parsed.published,
   };
@@ -564,8 +743,7 @@ export async function upsertNavLink(formData: FormData) {
     await prisma.navLink.create({ data: { landingPageId: landingPage.id, ...data } });
   }
 
-  revalidatePath("/");
-  revalidatePath("/admin/navegacion");
+  revalidateContentRoutes("/admin/topbar");
 }
 
 export async function deleteNavLink(formData: FormData) {
@@ -573,8 +751,87 @@ export async function deleteNavLink(formData: FormData) {
 
   await prisma.navLink.delete({ where: { id } });
 
+  revalidateContentRoutes("/admin/topbar");
+}
+
+export async function upsertAnnouncementBar(formData: FormData) {
+  const parsed = announcementBarSchema.parse(Object.fromEntries(formData));
+  const landingPage = await getLandingPageForAdmin();
+
+  await prisma.announcementBar.upsert({
+    where: { landingPageId: landingPage.id },
+    update: parsed,
+    create: { landingPageId: landingPage.id, ...parsed },
+  });
+
+  revalidateContentRoutes("/admin/topbar");
+}
+
+export async function deleteAnnouncementBar(formData: FormData) {
+  const id = z.string().min(1).parse(formData.get("id"));
+
+  await prisma.announcementBar.delete({ where: { id } });
+
+  revalidateContentRoutes("/admin/topbar");
+}
+
+export async function upsertContentPage(formData: FormData) {
+  const parsed = contentPageSchema.parse(Object.fromEntries(formData));
+  const landingPage = await getLandingPageForAdmin();
+  const slug = parsed.slug || slugify(parsed.title);
+  const driveImage = optionalDriveImage(parsed.driveUrl);
+
+  if (!slug) {
+    throw new Error("A slug is required.");
+  }
+
+  const data = {
+    title: parsed.title,
+    slug,
+    body: parsed.body,
+    altText: parsed.altText?.trim() || parsed.title,
+    driveUrl: driveImage?.originalUrl ?? null,
+    driveFileId: driveImage?.fileId ?? null,
+    sortOrder: parsed.sortOrder,
+    published: parsed.published,
+  };
+
+  if (parsed.id) {
+    const previous = await prisma.contentPage.findUnique({
+      where: { id: parsed.id },
+      select: { slug: true },
+    });
+    await prisma.contentPage.update({ where: { id: parsed.id }, data });
+    if (previous && previous.slug !== slug) {
+      revalidatePath(`/pagina/${previous.slug}`);
+    }
+  } else {
+    await prisma.contentPage.create({
+      data: { landingPageId: landingPage.id, ...data },
+    });
+  }
+
   revalidatePath("/");
-  revalidatePath("/admin/navegacion");
+  revalidatePath("/admin/paginas");
+  revalidatePath("/admin/topbar");
+  revalidatePath(`/pagina/${slug}`);
+}
+
+export async function deleteContentPage(formData: FormData) {
+  const id = z.string().min(1).parse(formData.get("id"));
+  const previous = await prisma.contentPage.findUnique({
+    where: { id },
+    select: { slug: true },
+  });
+
+  await prisma.contentPage.delete({ where: { id } });
+
+  revalidatePath("/");
+  revalidatePath("/admin/paginas");
+  revalidatePath("/admin/topbar");
+  if (previous) {
+    revalidatePath(`/pagina/${previous.slug}`);
+  }
 }
 
 export async function upsertProgramLevel(formData: FormData) {

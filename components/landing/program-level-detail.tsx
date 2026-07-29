@@ -11,7 +11,12 @@ export function ProgramLevelDetail({ level }: { level: PublishedProgramLevel }) 
 
   return (
     <div id="top">
-      <SiteHeader brand={page.title} eyebrow={page.eyebrow} />
+      <SiteHeader
+        brand={page.title}
+        eyebrow={page.eyebrow}
+        navLinks={page.navLinks}
+        announcement={page.announcementBar}
+      />
 
       <main className="landing">
         <article className="level-detail page-shell">

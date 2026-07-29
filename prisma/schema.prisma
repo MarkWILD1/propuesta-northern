@@ -55,6 +55,8 @@ model LandingPage {
   multidisciplinaryTeam MultidisciplinaryTeam?
   institutionalProject  InstitutionalProject?
   finalShow             FinalShow?
+  announcementBar       AnnouncementBar?
+  contentPages          ContentPage[]
 }
 
 model LandingSection {
@@ -115,6 +117,9 @@ model NavLink {
   landingPageId String
   label         String
   href          String
+  linkType      String      @default("SECTION")
+  openInNewTab  Boolean     @default(false)
+  highlight     Boolean     @default(false)
   sortOrder     Int
   published     Boolean     @default(true)
   createdAt     DateTime    @default(now())
@@ -301,4 +306,38 @@ model FinalShow {
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   landingPage   LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
+}
+
+model AnnouncementBar {
+  id            String      @id @default(cuid())
+  landingPageId String      @unique
+  message       String
+  linkLabel     String?
+  linkType      String      @default("NONE")
+  href          String?
+  openInNewTab  Boolean     @default(false)
+  dismissible   Boolean     @default(true)
+  published     Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  landingPage   LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
+}
+
+model ContentPage {
+  id            String      @id @default(cuid())
+  landingPageId String
+  title         String
+  slug          String
+  body          String
+  altText       String      @default("")
+  driveUrl      String?
+  driveFileId   String?
+  sortOrder     Int         @default(0)
+  published     Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  landingPage   LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
+
+  @@unique([landingPageId, slug])
+  @@index([landingPageId, sortOrder])
 }

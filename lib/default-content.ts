@@ -50,13 +50,26 @@ export function defaultLandingPageCreateData() {
     },
     navLinks: {
       create: [
-        { label: "Inicio", href: "#top", sortOrder: 0 },
-        { label: "Propuesta", href: "#niveles", sortOrder: 1 },
-        { label: "El Colegio", href: "#colegio", sortOrder: 2 },
-        { label: "Actividades", href: "#actividades", sortOrder: 3 },
-        { label: "Noticias", href: "#noticias", sortOrder: 4 },
-        { label: "Contacto", href: "#contacto", sortOrder: 5 },
+        { label: "Inicio", href: "/#top", linkType: "SECTION", sortOrder: 0 },
+        { label: "Propuesta", href: "/#niveles", linkType: "SECTION", sortOrder: 1 },
+        { label: "El Colegio", href: "/#colegio", linkType: "SECTION", sortOrder: 2 },
+        {
+          label: "Actividades",
+          href: "/#actividades",
+          linkType: "SECTION",
+          sortOrder: 3,
+        },
+        { label: "Talleres", href: "/#talleres", linkType: "SECTION", sortOrder: 4 },
+        { label: "Contacto", href: "/#contacto", linkType: "SECTION", sortOrder: 5 },
       ],
+    },
+    announcementBar: {
+      create: {
+        message: "Inscripciones abiertas",
+        linkType: "NONE",
+        dismissible: true,
+        published: false,
+      },
     },
     programLevels: {
       create: [

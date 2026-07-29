@@ -5,8 +5,10 @@ import { getLandingPageForAdmin } from "@/lib/content";
 export const dynamic = "force-dynamic";
 
 const MODULES = [
+  ["/admin/topbar", "Top bar", "Franja de anuncio y navegación"],
+  ["/admin/paginas", "Páginas", "Páginas propias enlazables"],
   ["/admin/carousel", "Carrusel", "Imágenes destacadas del hero"],
-  ["/admin/content", "Contenido", "Topbar y textos principales"],
+  ["/admin/content", "Contenido", "Textos principales"],
   ["/admin/niveles", "Misión y Visión", "Propuesta educativa"],
   ["/admin/estadisticas", "Estadística", "Números de la comunidad"],
   ["/admin/lo-que-nos-define", "Lo que nos define", "Identidad institucional"],

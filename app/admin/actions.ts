@@ -10,7 +10,9 @@ import { auth, signIn, signOut } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import {
   deleteActivityTab,
+  deleteAnnouncementBar,
   deleteCarouselSlide,
+  deleteContentPage,
   deleteInstagramPost,
   deleteInstitutionalProject,
   deleteLocation,
@@ -34,7 +36,9 @@ import {
   updateMultidisciplinaryTeam,
   updatePhysicalEducation,
   upsertActivityTab,
+  upsertAnnouncementBar,
   upsertCarouselSlide,
+  upsertContentPage,
   upsertInstagramPost,
   upsertLocation,
   upsertNavLink,
@@ -154,6 +158,26 @@ export async function saveNavLink(formData: FormData) {
 export async function removeNavLink(formData: FormData) {
   await requireAdmin();
   await deleteNavLink(formData);
+}
+
+export async function saveAnnouncementBar(formData: FormData) {
+  await requireAdmin();
+  await upsertAnnouncementBar(formData);
+}
+
+export async function removeAnnouncementBar(formData: FormData) {
+  await requireAdmin();
+  await deleteAnnouncementBar(formData);
+}
+
+export async function saveContentPage(formData: FormData) {
+  await requireAdmin();
+  await upsertContentPage(formData);
+}
+
+export async function removeContentPage(formData: FormData) {
+  await requireAdmin();
+  await deleteContentPage(formData);
 }
 
 export async function saveProgramLevel(formData: FormData) {

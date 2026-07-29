@@ -83,7 +83,7 @@ export function StatsCounter({
   }
 
   return (
-    <section className="stats-band" aria-labelledby="stats-title">
+    <section id="estadisticas" className="stats-band" aria-labelledby="stats-title">
       <div className="page-shell">
         <p className="section-kicker stats-kicker">{title}</p>
         <dl id="stats-title" className="stats-grid">

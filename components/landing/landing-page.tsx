@@ -18,7 +18,12 @@ import type { PublishedLandingPage } from "@/lib/content";
 export function LandingPage({ page }: { page: PublishedLandingPage }) {
   return (
     <div id="top">
-      <SiteHeader brand={page.title} eyebrow={page.eyebrow} />
+      <SiteHeader
+        brand={page.title}
+        eyebrow={page.eyebrow}
+        navLinks={page.navLinks}
+        announcement={page.announcementBar}
+      />
 
       <ScrollReveal>
         {/* 1. Carrusel */}

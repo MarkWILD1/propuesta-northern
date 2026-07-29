@@ -14,6 +14,8 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/admin", label: "Dashboard", exact: true },
+  { href: "/admin/topbar", label: "Top bar" },
+  { href: "/admin/paginas", label: "Páginas" },
   { href: "/admin/carousel", label: "Carrusel" },
   { href: "/admin/content", label: "Contenido" },
   { href: "/admin/niveles", label: "Misión y Visión" },

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import { isExternalHref, resolveNavHref } from "@/lib/landing-sections";
 
@@ -13,12 +13,12 @@ export type SiteNavLink = {
   highlight: boolean;
 };
 
-// Mirrors the breakpoint where globals.css swaps the nav for the toggle.
-const DESKTOP_QUERY = "(min-width: 821px)";
+const COMPACT_QUERY = "(max-width: 820px)";
 
 export function SiteNav({ links }: { links: SiteNavLink[] }) {
   const [open, setOpen] = useState(false);
   const navId = useId();
+  const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -27,17 +27,32 @@ export function SiteNav({ links }: { links: SiteNavLink[] }) {
       if (event.key === "Escape") setOpen(false);
     }
 
-    const desktop = window.matchMedia(DESKTOP_QUERY);
-    const onDesktopChange = () => {
-      if (desktop.matches) setOpen(false);
-    };
+    function onPointerDown(event: PointerEvent) {
+      const root = rootRef.current;
+      if (!root || !(event.target instanceof Node)) return;
+      if (!root.contains(event.target)) setOpen(false);
+    }
 
     document.addEventListener("keydown", onKeyDown);
-    desktop.addEventListener("change", onDesktopChange);
+    document.addEventListener("pointerdown", onPointerDown);
 
     return () => {
       document.removeEventListener("keydown", onKeyDown);
-      desktop.removeEventListener("change", onDesktopChange);
+      document.removeEventListener("pointerdown", onPointerDown);
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const compact = window.matchMedia(COMPACT_QUERY);
+    if (!compact.matches) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
     };
   }, [open]);
 
@@ -46,7 +61,7 @@ export function SiteNav({ links }: { links: SiteNavLink[] }) {
   }
 
   return (
-    <>
+    <div className="site-nav-root" ref={rootRef}>
       <button
         type="button"
         className="site-nav-toggle"
@@ -55,7 +70,11 @@ export function SiteNav({ links }: { links: SiteNavLink[] }) {
         aria-label={open ? "Cerrar menu" : "Abrir menu"}
         onClick={() => setOpen((value) => !value)}
       >
-        <span aria-hidden="true">{open ? "\u2715" : "\u2630"}</span>
+        <span className="site-nav-toggle-icon" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </span>
       </button>
       <nav
         id={navId}
@@ -93,6 +112,6 @@ export function SiteNav({ links }: { links: SiteNavLink[] }) {
           );
         })}
       </nav>
-    </>
+    </div>
   );
 }

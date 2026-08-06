@@ -49,7 +49,7 @@ export function TeamSection({ team }: { team: Team | null }) {
                   loading="lazy"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
-                  referrerPolicy="no-referrer"
+                  referrerPolicy="strict-origin-when-cross-origin"
                 />
               </div>
             ) : (

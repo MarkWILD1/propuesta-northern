@@ -66,6 +66,10 @@ export const landingTitleSchema = z.object({
   value: z.string().min(2, "Title is required."),
 });
 
+export const activitiesKickerSchema = z.object({
+  activitiesKicker: z.string().trim().max(80),
+});
+
 export const footerSchema = landingPageSchema.pick({
   contactTitle: true,
   contactBody: true,
@@ -575,6 +579,17 @@ export async function updateLandingTitle(formData: FormData) {
     "/admin/talleres",
     "/admin/mas-alla-del-aula",
   );
+}
+
+export async function updateActivitiesKicker(formData: FormData) {
+  const { activitiesKicker } = activitiesKickerSchema.parse(
+    Object.fromEntries(formData),
+  );
+  await prisma.landingPage.update({
+    where: { slug: HOME_SLUG },
+    data: { activitiesKicker },
+  });
+  revalidateContentRoutes("/admin/lenguas-extranjeras");
 }
 
 export async function updateFooter(formData: FormData) {

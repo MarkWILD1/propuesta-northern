@@ -16,9 +16,11 @@ type ActivityTab = {
 
 export function ActivityTabs({
   title,
+  kicker,
   activities,
 }: {
   title: string;
+  kicker?: string | null;
   activities: ActivityTab[];
 }) {
   const [active, setActive] = useState(0);
@@ -28,6 +30,7 @@ export function ActivityTabs({
   }
 
   const current = activities[active] ?? activities[0];
+  const kickerLabel = kicker?.trim() ?? "";
 
   return (
     <section
@@ -35,7 +38,7 @@ export function ActivityTabs({
       className="landing-section page-shell"
       aria-labelledby="activities-title"
     >
-      <p className="section-kicker">Vida escolar</p>
+      {kickerLabel ? <p className="section-kicker">{kickerLabel}</p> : null}
       <h2 id="activities-title" className="display">
         {title}
       </h2>

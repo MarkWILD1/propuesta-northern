@@ -54,7 +54,11 @@ export function LandingPage({ page }: { page: PublishedLandingPage }) {
         />
 
         {/* 6. Lenguas extranjeras */}
-        <ActivityTabs title={page.activitiesTitle} activities={page.activities} />
+        <ActivityTabs
+          title={page.activitiesTitle}
+          kicker={page.activitiesKicker}
+          activities={page.activities}
+        />
 
         {/* 7. Talleres */}
         <Workshops title={page.galleryTitle} workshops={page.workshops} />

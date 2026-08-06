@@ -30,6 +30,7 @@ model LandingPage {
   statsTitle            String                 @default("Nuestra comunidad en numeros")
   featuredTitle         String                 @default("Lo que nos define")
   activitiesTitle       String                 @default("Vida en el colegio")
+  activitiesKicker      String                 @default("Vida escolar")
   galleryTitle          String                 @default("Momentos de la comunidad Northern")
   newsTitle             String                 @default("Noticias")
   instagramTitle        String                 @default("Seguinos en Instagram")

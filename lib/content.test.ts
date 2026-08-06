@@ -102,6 +102,7 @@ describe("landing content validation", () => {
     expect(defaults.sections.create).toHaveLength(3);
     expect(defaults.sections.create.map((section) => section.sortOrder)).toEqual([0, 1, 2]);
     expect(defaults.activitiesTitle).toBe("Lenguas extranjeras");
+    expect(defaults.activitiesKicker).toBe("Vida escolar");
     expect(defaults.galleryTitle).toBe("Talleres");
     expect(defaults.physicalEducation.create.driveUrl).toBeNull();
   });

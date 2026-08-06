@@ -1,4 +1,4 @@
-import { saveLandingTitles } from "@/app/admin/actions";
+import { saveActivitiesKicker, saveLandingTitles } from "@/app/admin/actions";
 
 type LandingTitleField =
   | "levelsTitle"
@@ -31,6 +31,29 @@ export function LandingTitleForm({
       </div>
       <button className="button" type="submit">
         Guardar título
+      </button>
+    </form>
+  );
+}
+
+export function ActivitiesKickerForm({ value }: { value: string }) {
+  return (
+    <form action={saveActivitiesKicker} className="form-card form-grid">
+      <div className="field">
+        <label htmlFor="activities-kicker">Etiqueta superior</label>
+        <input
+          id="activities-kicker"
+          name="activitiesKicker"
+          defaultValue={value}
+          maxLength={80}
+          placeholder="Vida escolar"
+        />
+        <p className="muted">
+          Dejá vacío para ocultar la etiqueta azul encima del título.
+        </p>
+      </div>
+      <button className="button" type="submit">
+        Guardar etiqueta
       </button>
     </form>
   );

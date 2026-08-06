@@ -3,7 +3,10 @@ import {
   ActivityTabPreview,
   DeleteActivityTabForm,
 } from "@/components/admin/activity-forms";
-import { LandingTitleForm } from "@/components/admin/landing-title-form";
+import {
+  ActivitiesKickerForm,
+  LandingTitleForm,
+} from "@/components/admin/landing-title-form";
 import { getLandingPageForAdmin } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
@@ -21,6 +24,7 @@ export default async function AdminLenguasExtranjerasPage() {
         <p className="muted">Gestiona textos, imágenes y enlaces externos de cada lengua.</p>
       </header>
       <LandingTitleForm field="activitiesTitle" value={page.activitiesTitle} />
+      <ActivitiesKickerForm value={page.activitiesKicker} />
       <ActivityTabForm nextSortOrder={nextSortOrder} />
       <section className="admin-grid" aria-label="Lenguas guardadas">
         {page.activities.map((activity) => (

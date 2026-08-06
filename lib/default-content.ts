@@ -14,6 +14,7 @@ export function defaultLandingPageCreateData() {
     statsTitle: "Nuestra comunidad en numeros",
     featuredTitle: "Lo que nos define",
     activitiesTitle: "Lenguas extranjeras",
+    activitiesKicker: "Vida escolar",
     galleryTitle: "Talleres",
     newsTitle: "Noticias",
     instagramTitle: "Más allá del aula",

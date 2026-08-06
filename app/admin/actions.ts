@@ -32,6 +32,7 @@ import {
   updateInstitutionalProject,
   updateLandingHero,
   updateLandingPage,
+  updateActivitiesKicker,
   updateLandingTitle,
   updateMultidisciplinaryTeam,
   updatePhysicalEducation,
@@ -103,6 +104,11 @@ export async function saveLandingHero(formData: FormData) {
 export async function saveLandingTitles(formData: FormData) {
   await requireAdmin();
   await updateLandingTitle(formData);
+}
+
+export async function saveActivitiesKicker(formData: FormData) {
+  await requireAdmin();
+  await updateActivitiesKicker(formData);
 }
 
 export async function saveFooter(formData: FormData) {

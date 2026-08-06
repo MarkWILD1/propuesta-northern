@@ -108,15 +108,35 @@ export function FinalShow({ content }: { content: FinalShowContent | null }) {
         ))}
         {hasCountdown ? <Countdown target={targetTime} /> : null}
         {youtube ? (
-          <div className="video-embed final-show-video">
-            <iframe
-              src={youtube.embedUrl}
-              title={hasTitle ? content.title : "The Final Show"}
-              loading="lazy"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen
-              referrerPolicy="no-referrer"
-            />
+          <div className="final-show-video">
+            <a
+              className="final-show-video-link"
+              href={youtube.watchUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Mirar el video en YouTube"
+            >
+              <img
+                className="final-show-video-thumb"
+                src={`https://i.ytimg.com/vi/${youtube.videoId}/hqdefault.jpg`}
+                alt=""
+                width={860}
+                height={484}
+                loading="lazy"
+                decoding="async"
+              />
+              <span className="final-show-video-play" aria-hidden="true">
+                <span className="final-show-video-play-icon" />
+              </span>
+            </a>
+            <a
+              className="button final-show-youtube-button"
+              href={youtube.watchUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Mirar en YouTube
+            </a>
           </div>
         ) : null}
       </div>

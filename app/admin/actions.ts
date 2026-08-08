@@ -24,6 +24,8 @@ import {
   deletePhoto,
   deleteProgramLevel,
   deleteSection,
+  deleteStaffApplicationField,
+  deleteStaffApplicationSubmission,
   deleteStatItem,
   deleteTeamVideo,
   deleteWorkshop,
@@ -36,6 +38,7 @@ import {
   updateLandingTitle,
   updateMultidisciplinaryTeam,
   updatePhysicalEducation,
+  updateStaffApplicationSection,
   upsertActivityTab,
   upsertAnnouncementBar,
   upsertCarouselSlide,
@@ -47,6 +50,7 @@ import {
   upsertPhoto,
   upsertProgramLevel,
   upsertSection,
+  upsertStaffApplicationField,
   upsertStatItem,
   upsertTeamVideo,
   upsertWorkshop,
@@ -294,6 +298,26 @@ export async function saveFinalShow(formData: FormData) {
 export async function removeFinalShow(formData: FormData) {
   await requireAdmin();
   await deleteFinalShow(formData);
+}
+
+export async function saveStaffApplicationSection(formData: FormData) {
+  await requireAdmin();
+  await updateStaffApplicationSection(formData);
+}
+
+export async function saveStaffApplicationField(formData: FormData) {
+  await requireAdmin();
+  await upsertStaffApplicationField(formData);
+}
+
+export async function removeStaffApplicationField(formData: FormData) {
+  await requireAdmin();
+  await deleteStaffApplicationField(formData);
+}
+
+export async function removeStaffApplicationSubmission(formData: FormData) {
+  await requireAdmin();
+  await deleteStaffApplicationSubmission(formData);
 }
 
 export async function createAdminUser(

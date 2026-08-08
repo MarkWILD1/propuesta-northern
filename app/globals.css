@@ -1029,6 +1029,7 @@ img {
 .intro,
 .stats-band,
 .instagram-band,
+.staff-section,
 .site-footer {
   scroll-margin-top: 90px;
 }
@@ -2104,6 +2105,192 @@ a.workshop-card:hover .workshop-media img {
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
 }
 
+.staff-section {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin: 28px 0 0;
+  padding-block: clamp(56px, 8vw, 104px);
+  color: #fff;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(215, 169, 75, 0.18), transparent 22rem),
+    radial-gradient(circle at 88% 82%, rgba(255, 255, 255, 0.08), transparent 26rem),
+    linear-gradient(145deg, #163821 0%, var(--title-dark) 48%, #2a6b35 100%);
+}
+
+.staff-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.55), transparent 85%);
+  pointer-events: none;
+}
+
+.staff-section-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
+  gap: clamp(28px, 5vw, 56px);
+  align-items: center;
+}
+
+.staff-copy {
+  display: grid;
+  gap: 18px;
+  align-content: start;
+}
+
+.staff-section .section-kicker {
+  color: var(--accent);
+}
+
+.staff-section h2 {
+  margin: 0;
+  max-width: 14ch;
+  color: #fff;
+  font-size: clamp(2.4rem, 5.5vw, 4.4rem);
+}
+
+.staff-intro {
+  max-width: 38ch;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 1.08rem;
+  line-height: 1.7;
+}
+
+.staff-points {
+  display: grid;
+  gap: 12px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.staff-points li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  align-items: baseline;
+  padding: 12px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.98rem;
+  line-height: 1.45;
+}
+
+.staff-points li:last-child {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.staff-point-index {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.05rem;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+
+.staff-panel {
+  display: grid;
+  gap: 18px;
+  padding: clamp(22px, 3vw, 32px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 22px 60px rgba(8, 24, 12, 0.28);
+  color: var(--text);
+}
+
+.staff-panel-head {
+  display: grid;
+  gap: 6px;
+}
+
+.staff-panel-head h3 {
+  margin: 0;
+  color: var(--title-dark);
+  font-size: 1.35rem;
+  letter-spacing: -0.02em;
+}
+
+.staff-panel-head p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.staff-form {
+  width: 100%;
+  margin: 0;
+}
+
+.staff-submit {
+  width: 100%;
+  margin-top: 4px;
+  min-height: 48px;
+}
+
+.staff-form-success {
+  margin: 0;
+  padding: 28px 8px;
+  color: var(--title-dark);
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.staff-submission-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.staff-submission-answers {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.staff-submission-answers > div {
+  display: grid;
+  gap: 4px;
+}
+
+.staff-submission-answers dt {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.staff-submission-answers dd {
+  margin: 0;
+  word-break: break-word;
+}
+
+.staff-submission-answers a {
+  color: inherit;
+}
+
+@media (max-width: 900px) {
+  .staff-section-inner {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .staff-section h2 {
+    max-width: 16ch;
+  }
+}
+
 @media (max-width: 720px) {
   .workshops-grid,
   .team-videos,
@@ -2119,5 +2306,9 @@ a.workshop-card:hover .workshop-media img {
   .feature-media.is-reversed .feature-media-text,
   .locale-row.is-reversed .locale-media {
     order: 0;
+  }
+
+  .staff-panel {
+    padding: 20px;
   }
 }

@@ -11,6 +11,7 @@ export const LANDING_SECTIONS = [
   { href: "/#mas-alla-del-aula", label: "Mas alla del aula" },
   { href: "/#locales", label: "Locales y espacios" },
   { href: "/#final-show", label: "The Final Show" },
+  { href: "/#staff", label: "Staff" },
   { href: "/#contacto", label: "Contacto" },
 ] as const;
 

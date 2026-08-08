@@ -29,6 +29,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/admin/mas-alla-del-aula", label: "Más allá del aula" },
   { href: "/admin/locales-y-espacios", label: "Locales y espacios" },
   { href: "/admin/muestra-final", label: "Countdown — The Final Show" },
+  { href: "/admin/staff", label: "Staff" },
   { href: "/admin/footer", label: "Footer" },
   { href: "/admin/usuarios", label: "Usuarios" },
   { href: "/", label: "Ver landing", neverActive: true },

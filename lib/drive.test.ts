@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { getDriveImageDisplayUrl, parseDriveImageUrl } from "@/lib/drive";
+import {
+  getDriveImageDisplayUrl,
+  parseDriveFileUrl,
+  parseDriveImageUrl,
+} from "@/lib/drive";
 
 describe("parseDriveImageUrl", () => {
   it("extracts a file id from a standard Drive share URL", () => {
@@ -35,6 +39,23 @@ describe("parseDriveImageUrl", () => {
   it("rejects Drive URLs without a file id", () => {
     expect(() => parseDriveImageUrl("https://drive.google.com/drive/my-drive")).toThrow(
       "Could not find a Google Drive file id in this link.",
+    );
+  });
+});
+
+describe("parseDriveFileUrl", () => {
+  it("accepts a Drive share link for CVs", () => {
+    const parsed = parseDriveFileUrl(
+      "https://drive.google.com/file/d/cvFileId99/view?usp=sharing",
+    );
+
+    expect(parsed.fileId).toBe("cvFileId99");
+    expect(parsed.originalUrl).toContain("cvFileId99");
+  });
+
+  it("rejects non-Drive links with CV-oriented messaging", () => {
+    expect(() => parseDriveFileUrl("https://example.com/cv.pdf")).toThrow(
+      "Usá un link de Google Drive para el curriculum.",
     );
   });
 });

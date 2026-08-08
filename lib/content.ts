@@ -2,7 +2,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { defaultLandingPageCreateData, HOME_SLUG } from "@/lib/default-content";
-import { parseDriveImageUrl } from "@/lib/drive";
+import { parseDriveFileUrl, parseDriveImageUrl } from "@/lib/drive";
 import {
   ANNOUNCEMENT_LINK_TYPES,
   contentPageHref,
@@ -12,6 +12,13 @@ import {
 } from "@/lib/landing-sections";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slugify";
+import {
+  parseSelectOptions,
+  STAFF_FIELD_TYPES,
+  type StaffFieldType,
+} from "@/lib/staff-fields";
+
+export { parseSelectOptions, STAFF_FIELD_TYPES, type StaffFieldType };
 
 const checkboxBoolean = z.preprocess(
   (value) => value === "true" || value === "on" || value === "1" || value === true,
@@ -373,6 +380,46 @@ export const finalShowSchema = z.object({
   published: checkboxBoolean.default(false),
 });
 
+export const staffApplicationSectionSchema = z.object({
+  title: z.string().min(2, "Title is required."),
+  body: z.string(),
+  successMessage: z.string().min(2, "Success message is required."),
+  submitLabel: z.string().min(2, "Submit label is required."),
+  published: checkboxBoolean.default(true),
+});
+
+export const staffApplicationFieldSchema = z.object({
+  id: z.string().optional(),
+  label: z.string().min(1, "Label is required."),
+  type: z.enum(STAFF_FIELD_TYPES),
+  required: checkboxBoolean.default(true),
+  placeholder: z.string().optional(),
+  options: z.string().optional(),
+  sortOrder: z.coerce.number().int().min(0),
+  published: checkboxBoolean.default(true),
+});
+
+const DEFAULT_STAFF_FIELDS: Array<{
+  label: string;
+  type: StaffFieldType;
+  required: boolean;
+  placeholder?: string;
+  sortOrder: number;
+}> = [
+  { label: "Nombre", type: "TEXT", required: true, sortOrder: 0 },
+  { label: "Email", type: "EMAIL", required: true, sortOrder: 1 },
+  { label: "Teléfono", type: "PHONE", required: false, sortOrder: 2 },
+  { label: "Área de interés", type: "TEXT", required: false, sortOrder: 3 },
+  { label: "Mensaje", type: "TEXTAREA", required: false, sortOrder: 4 },
+  {
+    label: "Curriculum — link de Drive",
+    type: "DRIVE_URL",
+    required: true,
+    placeholder: "https://drive.google.com/file/d/.../view",
+    sortOrder: 5,
+  },
+];
+
 export async function getLandingPageForAdmin() {
   const page = await prisma.landingPage.upsert({
     where: { slug: HOME_SLUG },
@@ -469,6 +516,15 @@ export async function getPublishedLandingPage() {
       institutionalProject: { where: { published: true } },
       finalShow: { where: { published: true } },
       announcementBar: { where: { published: true } },
+      staffApplication: {
+        where: { published: true },
+        include: {
+          fields: {
+            where: { published: true },
+            orderBy: { sortOrder: "asc" },
+          },
+        },
+      },
     },
   });
 
@@ -1288,5 +1344,230 @@ export async function deleteFinalShow(formData: FormData) {
   const id = z.string().min(1).parse(formData.get("id"));
   await prisma.finalShow.delete({ where: { id } });
   revalidateContentRoutes("/admin/muestra-final");
+}
+
+export async function getStaffApplicationSection() {
+  const landingPage = await getLandingPageForAdmin();
+
+  const existing = await prisma.staffApplicationSection.findUnique({
+    where: { landingPageId: landingPage.id },
+    include: {
+      fields: { orderBy: { sortOrder: "asc" } },
+      submissions: { orderBy: { createdAt: "desc" } },
+    },
+  });
+
+  if (existing) return existing;
+
+  return prisma.staffApplicationSection.create({
+    data: {
+      landingPageId: landingPage.id,
+      fields: {
+        create: DEFAULT_STAFF_FIELDS.map((field) => ({
+          label: field.label,
+          type: field.type,
+          required: field.required,
+          placeholder: field.placeholder ?? null,
+          sortOrder: field.sortOrder,
+          published: true,
+        })),
+      },
+    },
+    include: {
+      fields: { orderBy: { sortOrder: "asc" } },
+      submissions: { orderBy: { createdAt: "desc" } },
+    },
+  });
+}
+
+export async function updateStaffApplicationSection(formData: FormData) {
+  const parsed = staffApplicationSectionSchema.parse(Object.fromEntries(formData));
+  const landingPage = await getLandingPageForAdmin();
+  const data = {
+    title: parsed.title,
+    body: parsed.body,
+    successMessage: parsed.successMessage,
+    submitLabel: parsed.submitLabel,
+    published: parsed.published,
+  };
+
+  await prisma.staffApplicationSection.upsert({
+    where: { landingPageId: landingPage.id },
+    update: data,
+    create: {
+      landingPageId: landingPage.id,
+      ...data,
+      fields: {
+        create: DEFAULT_STAFF_FIELDS.map((field) => ({
+          label: field.label,
+          type: field.type,
+          required: field.required,
+          placeholder: field.placeholder ?? null,
+          sortOrder: field.sortOrder,
+          published: true,
+        })),
+      },
+    },
+  });
+
+  revalidateContentRoutes("/admin/staff");
+}
+
+export async function upsertStaffApplicationField(formData: FormData) {
+  const parsed = staffApplicationFieldSchema.parse(Object.fromEntries(formData));
+  const section = await getStaffApplicationSection();
+
+  if (parsed.type === "SELECT" && !parsed.options?.trim()) {
+    throw new Error("SELECT fields need at least one option.");
+  }
+
+  const data = {
+    label: parsed.label.trim(),
+    type: parsed.type,
+    required: parsed.required,
+    placeholder: parsed.placeholder?.trim() || null,
+    options: parsed.type === "SELECT" ? parsed.options?.trim() || null : null,
+    sortOrder: parsed.sortOrder,
+    published: parsed.published,
+  };
+
+  if (parsed.id) {
+    await prisma.staffApplicationField.update({
+      where: { id: parsed.id },
+      data,
+    });
+  } else {
+    await prisma.staffApplicationField.create({
+      data: { sectionId: section.id, ...data },
+    });
+  }
+
+  revalidateContentRoutes("/admin/staff");
+}
+
+export async function deleteStaffApplicationField(formData: FormData) {
+  const id = z.string().min(1).parse(formData.get("id"));
+  await prisma.staffApplicationField.delete({ where: { id } });
+  revalidateContentRoutes("/admin/staff");
+}
+
+export async function deleteStaffApplicationSubmission(formData: FormData) {
+  const id = z.string().min(1).parse(formData.get("id"));
+  await prisma.staffApplicationSubmission.delete({ where: { id } });
+  revalidateContentRoutes("/admin/staff");
+}
+
+type FieldValidation =
+  | { ok: true; value: string | null }
+  | { ok: false; error: string };
+
+function validateStaffFieldAnswer(
+  type: StaffFieldType,
+  label: string,
+  value: string,
+  required: boolean,
+  options: string | null,
+): FieldValidation {
+  const trimmed = value.trim();
+
+  if (!trimmed) {
+    if (required) return { ok: false, error: `${label} es obligatorio.` };
+    return { ok: true, value: null };
+  }
+
+  switch (type) {
+    case "EMAIL": {
+      const email = z.string().email().safeParse(trimmed);
+      if (!email.success) {
+        return { ok: false, error: `${label} debe ser un email válido.` };
+      }
+      return { ok: true, value: trimmed };
+    }
+    case "PHONE":
+      if (trimmed.length < 6) {
+        return { ok: false, error: `${label} parece incompleto.` };
+      }
+      return { ok: true, value: trimmed };
+    case "SELECT": {
+      const allowed = parseSelectOptions(options);
+      if (!allowed.includes(trimmed)) {
+        return { ok: false, error: `${label}: opción no válida.` };
+      }
+      return { ok: true, value: trimmed };
+    }
+    case "DRIVE_URL": {
+      try {
+        return { ok: true, value: parseDriveFileUrl(trimmed).originalUrl };
+      } catch (error) {
+        return {
+          ok: false,
+          error:
+            error instanceof Error ? error.message : `${label}: link inválido.`,
+        };
+      }
+    }
+    case "TEXT":
+    case "TEXTAREA":
+    default:
+      return { ok: true, value: trimmed };
+  }
+}
+
+export type StaffApplicationSubmitState = {
+  error?: string;
+  success?: boolean;
+  message?: string;
+};
+
+export async function submitStaffApplication(
+  _previousState: StaffApplicationSubmitState,
+  formData: FormData,
+): Promise<StaffApplicationSubmitState> {
+  const section = await prisma.staffApplicationSection.findFirst({
+    where: {
+      published: true,
+      landingPage: { slug: HOME_SLUG, published: true },
+    },
+    include: {
+      fields: {
+        where: { published: true },
+        orderBy: { sortOrder: "asc" },
+      },
+    },
+  });
+
+  if (!section || section.fields.length === 0) {
+    return { error: "El formulario no está disponible en este momento." };
+  }
+
+  const answers: Record<string, string> = {};
+
+  for (const field of section.fields) {
+    const raw = String(formData.get(`field_${field.id}`) ?? "");
+    const validated = validateStaffFieldAnswer(
+      field.type as StaffFieldType,
+      field.label,
+      raw,
+      field.required,
+      field.options,
+    );
+
+    if (!validated.ok) return { error: validated.error };
+    if (validated.value !== null) answers[field.id] = validated.value;
+  }
+
+  await prisma.staffApplicationSubmission.create({
+    data: {
+      sectionId: section.id,
+      answersJson: JSON.stringify(answers),
+    },
+  });
+
+  revalidatePath("/admin/staff");
+
+  return {
+    success: true,
+    message: section.successMessage,
+  };
 }
 

@@ -11,11 +11,24 @@ export type DriveImage = {
   displayUrl: string;
 };
 
-export function parseDriveImageUrl(value: string): DriveImage {
+export type DriveFile = {
+  originalUrl: string;
+  fileId: string;
+};
+
+function parseDriveShareLink(
+  value: string,
+  messages: {
+    empty: string;
+    invalidUrl: string;
+    notDrive: string;
+    noFileId: string;
+  },
+): DriveFile {
   const originalUrl = value.trim();
 
   if (!originalUrl) {
-    throw new Error("Paste a Google Drive share link.");
+    throw new Error(messages.empty);
   }
 
   let url: URL;
@@ -23,14 +36,14 @@ export function parseDriveImageUrl(value: string): DriveImage {
   try {
     url = new URL(originalUrl);
   } catch {
-    throw new Error("The photo link must be a valid URL.");
+    throw new Error(messages.invalidUrl);
   }
 
   const isGoogleDriveHost =
     url.hostname === "drive.google.com" || url.hostname === "docs.google.com";
 
   if (!isGoogleDriveHost) {
-    throw new Error("Use a Google Drive image link.");
+    throw new Error(messages.notDrive);
   }
 
   const fileId =
@@ -38,14 +51,34 @@ export function parseDriveImageUrl(value: string): DriveImage {
     url.searchParams.get("id");
 
   if (!fileId) {
-    throw new Error("Could not find a Google Drive file id in this link.");
+    throw new Error(messages.noFileId);
   }
 
+  return { originalUrl, fileId };
+}
+
+export function parseDriveImageUrl(value: string): DriveImage {
+  const parsed = parseDriveShareLink(value, {
+    empty: "Paste a Google Drive share link.",
+    invalidUrl: "The photo link must be a valid URL.",
+    notDrive: "Use a Google Drive image link.",
+    noFileId: "Could not find a Google Drive file id in this link.",
+  });
+
   return {
-    originalUrl,
-    fileId,
-    displayUrl: getDriveImageDisplayUrl(fileId),
+    ...parsed,
+    displayUrl: getDriveImageDisplayUrl(parsed.fileId),
   };
+}
+
+/** Validates a public Google Drive file link (CV, PDF, etc.). */
+export function parseDriveFileUrl(value: string): DriveFile {
+  return parseDriveShareLink(value, {
+    empty: "Pegá el link público de Google Drive de tu curriculum.",
+    invalidUrl: "El link del curriculum debe ser una URL válida.",
+    notDrive: "Usá un link de Google Drive para el curriculum.",
+    noFileId: "No pudimos leer el archivo de Google Drive en este link.",
+  });
 }
 
 export function getDriveImageDisplayUrl(fileId: string) {

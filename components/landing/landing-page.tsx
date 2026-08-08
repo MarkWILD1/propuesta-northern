@@ -9,6 +9,7 @@ import { ProgramLevels } from "@/components/landing/program-levels";
 import { ScrollReveal } from "@/components/landing/scroll-reveal";
 import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteHeader } from "@/components/landing/site-header";
+import { StaffApplicationSection } from "@/components/landing/staff-application-section";
 import { StatsCounter } from "@/components/landing/stats-counter";
 import { TeamSection } from "@/components/landing/team-section";
 import { Workshops } from "@/components/landing/workshops";
@@ -106,9 +107,12 @@ export function LandingPage({ page }: { page: PublishedLandingPage }) {
               : null
           }
         />
+
+        {/* 14. Staff */}
+        <StaffApplicationSection content={page.staffApplication} />
       </ScrollReveal>
 
-      {/* 14. Footer */}
+      {/* 15. Footer */}
       <SiteFooter
         brand={page.title}
         contactTitle={page.contactTitle}

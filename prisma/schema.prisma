@@ -58,6 +58,7 @@ model LandingPage {
   finalShow             FinalShow?
   announcementBar       AnnouncementBar?
   contentPages          ContentPage[]
+  staffApplication      StaffApplicationSection?
 }
 
 model LandingSection {
@@ -341,4 +342,46 @@ model ContentPage {
 
   @@unique([landingPageId, slug])
   @@index([landingPageId, sortOrder])
+}
+
+model StaffApplicationSection {
+  id             String                       @id @default(cuid())
+  landingPageId  String                       @unique
+  title          String                       @default("Te gustaría hacer parte del staff Northern")
+  body           String                       @default("Envíanos tu curriculum aquí.")
+  successMessage String                       @default("¡Gracias! Recibimos tu postulación.")
+  submitLabel    String                       @default("Enviar postulación")
+  published      Boolean                      @default(true)
+  createdAt      DateTime                     @default(now())
+  updatedAt      DateTime                     @updatedAt
+  landingPage    LandingPage                  @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
+  fields         StaffApplicationField[]
+  submissions    StaffApplicationSubmission[]
+}
+
+model StaffApplicationField {
+  id          String                  @id @default(cuid())
+  sectionId   String
+  label       String
+  type        String
+  required    Boolean                 @default(true)
+  placeholder String?
+  options     String?
+  sortOrder   Int
+  published   Boolean                 @default(true)
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
+  section     StaffApplicationSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@index([sectionId, sortOrder])
+}
+
+model StaffApplicationSubmission {
+  id          String                  @id @default(cuid())
+  sectionId   String
+  answersJson String
+  createdAt   DateTime                @default(now())
+  section     StaffApplicationSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@index([sectionId, createdAt])
 }

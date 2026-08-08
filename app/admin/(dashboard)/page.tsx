@@ -20,6 +20,7 @@ const MODULES = [
   ["/admin/mas-alla-del-aula", "Más allá del aula", "Publicaciones sociales"],
   ["/admin/locales-y-espacios", "Locales y espacios", "Sedes e instalaciones"],
   ["/admin/muestra-final", "Countdown — The Final Show", "Cuenta regresiva y video"],
+  ["/admin/staff", "Staff", "Formulario de postulación y respuestas"],
   ["/admin/footer", "Footer", "Datos de contacto"],
 ] as const;
 

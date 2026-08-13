@@ -14,11 +14,22 @@ import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slugify";
 import {
   parseSelectOptions,
+  parseStaffFileAnswer,
   STAFF_FIELD_TYPES,
   type StaffFieldType,
 } from "@/lib/staff-fields";
+import {
+  staffFileAnswerToStoredValue,
+  uploadStaffPdf,
+  validateStaffPdfFile,
+} from "@/lib/staff-pdf";
 
-export { parseSelectOptions, STAFF_FIELD_TYPES, type StaffFieldType };
+export {
+  parseSelectOptions,
+  parseStaffFileAnswer,
+  STAFF_FIELD_TYPES,
+  type StaffFieldType,
+};
 
 const checkboxBoolean = z.preprocess(
   (value) => value === "true" || value === "on" || value === "1" || value === true,
@@ -412,10 +423,9 @@ const DEFAULT_STAFF_FIELDS: Array<{
   { label: "Área de interés", type: "TEXT", required: false, sortOrder: 3 },
   { label: "Mensaje", type: "TEXTAREA", required: false, sortOrder: 4 },
   {
-    label: "Curriculum — link de Drive",
-    type: "DRIVE_URL",
+    label: "Curriculum (PDF)",
+    type: "PDF_FILE",
     required: true,
-    placeholder: "https://drive.google.com/file/d/.../view",
     sortOrder: 5,
   },
 ];
@@ -1542,18 +1552,56 @@ export async function submitStaffApplication(
 
   const answers: Record<string, string> = {};
 
-  for (const field of section.fields) {
-    const raw = String(formData.get(`field_${field.id}`) ?? "");
-    const validated = validateStaffFieldAnswer(
-      field.type as StaffFieldType,
-      field.label,
-      raw,
-      field.required,
-      field.options,
-    );
+  try {
+    for (const field of section.fields) {
+      const fieldType = field.type as StaffFieldType;
+      const key = `field_${field.id}`;
 
-    if (!validated.ok) return { error: validated.error };
-    if (validated.value !== null) answers[field.id] = validated.value;
+      if (fieldType === "PDF_FILE") {
+        const validated = await validateStaffPdfFile(
+          formData.get(key),
+          field.label,
+          field.required,
+        );
+        if (!validated.ok) return { error: validated.error };
+        if (validated.value) {
+          const uploaded = await uploadStaffPdf(
+            validated.value.file,
+            validated.value.buffer,
+          );
+          answers[field.id] = staffFileAnswerToStoredValue(uploaded);
+        }
+        continue;
+      }
+
+      const raw = String(formData.get(key) ?? "");
+      const validated = validateStaffFieldAnswer(
+        fieldType,
+        field.label,
+        raw,
+        field.required,
+        field.options,
+      );
+
+      if (!validated.ok) return { error: validated.error };
+      if (validated.value !== null) answers[field.id] = validated.value;
+    }
+  } catch (error) {
+    console.error("staff application submit failed", error);
+    const message = error instanceof Error ? error.message : "";
+    if (
+      message.includes("BLOB_READ_WRITE_TOKEN") ||
+      message.includes("No blob credentials")
+    ) {
+      return {
+        error:
+          "Falta configurar el almacenamiento de archivos (BLOB_READ_WRITE_TOKEN). Pedile al administrador que lo active en Vercel.",
+      };
+    }
+    return {
+      error:
+        "No pudimos guardar la postulación. Revisá el PDF e intentá de nuevo.",
+    };
   }
 
   await prisma.staffApplicationSubmission.create({

@@ -4,7 +4,7 @@ import {
   saveStaffApplicationField,
   saveStaffApplicationSection,
 } from "@/app/admin/actions";
-import { STAFF_FIELD_TYPES } from "@/lib/staff-fields";
+import { parseStaffFileAnswer, STAFF_FIELD_TYPES } from "@/lib/staff-fields";
 
 type StaffField = {
   id: string;
@@ -40,6 +40,7 @@ const FIELD_TYPE_LABELS: Record<(typeof STAFF_FIELD_TYPES)[number], string> = {
   TEXTAREA: "Texto largo",
   SELECT: "Lista desplegable",
   DRIVE_URL: "Link Drive (CV)",
+  PDF_FILE: "Curriculum PDF",
 };
 
 export function StaffApplicationAdmin({ section }: { section: StaffSection }) {
@@ -96,12 +97,13 @@ export function StaffApplicationAdmin({ section }: { section: StaffSection }) {
         <h2 id="staff-fields-title">Campos del formulario</h2>
         <p className="muted">
           Agregá, editá u ordená los campos que se muestran en la landing. Para
-          listas desplegables, escribí una opción por línea.
+          listas desplegables, escribí una opción por línea. Para curriculum,
+          usá el tipo “Curriculum PDF” (archivo PDF hasta 5 MB).
         </p>
         <StaffFieldForm nextSortOrder={nextSortOrder} />
-        <div className="admin-grid">
+        <div className="staff-fields-grid">
           {section.fields.map((field) => (
-            <article key={field.id} className="admin-card stack">
+            <article key={field.id} className="admin-card stack staff-field-card">
               <StaffFieldForm field={field} />
               <form action={removeStaffApplicationField}>
                 <input type="hidden" name="id" value={field.id} />
@@ -147,7 +149,7 @@ function StaffFieldForm({
   const type = (field?.type ?? "TEXT") as (typeof STAFF_FIELD_TYPES)[number];
 
   return (
-    <form action={saveStaffApplicationField} className="form-card form-grid">
+    <form action={saveStaffApplicationField} className="form-card staff-field-form">
       <h3>{field ? "Editar campo" : "Nuevo campo"}</h3>
       {field ? <input type="hidden" name="id" value={field.id} /> : null}
       <div className="field">
@@ -196,37 +198,39 @@ function StaffFieldForm({
         />
         <small>Una opción por línea.</small>
       </div>
-      <div className="field">
-        <label htmlFor={`staff-field-sort-${suffix}`}>Orden</label>
-        <input
-          id={`staff-field-sort-${suffix}`}
-          name="sortOrder"
-          type="number"
-          min={0}
-          defaultValue={field?.sortOrder ?? nextSortOrder}
-          required
-        />
+      <div className="staff-field-meta">
+        <div className="field">
+          <label htmlFor={`staff-field-sort-${suffix}`}>Orden</label>
+          <input
+            id={`staff-field-sort-${suffix}`}
+            name="sortOrder"
+            type="number"
+            min={0}
+            defaultValue={field?.sortOrder ?? nextSortOrder}
+            required
+          />
+        </div>
+        <label className="checkbox">
+          <input type="hidden" name="required" value="false" />
+          <input
+            type="checkbox"
+            name="required"
+            value="true"
+            defaultChecked={field?.required ?? true}
+          />
+          Obligatorio
+        </label>
+        <label className="checkbox">
+          <input type="hidden" name="published" value="false" />
+          <input
+            type="checkbox"
+            name="published"
+            value="true"
+            defaultChecked={field?.published ?? true}
+          />
+          Publicado
+        </label>
       </div>
-      <label className="checkbox">
-        <input type="hidden" name="required" value="false" />
-        <input
-          type="checkbox"
-          name="required"
-          value="true"
-          defaultChecked={field?.required ?? true}
-        />
-        Obligatorio
-      </label>
-      <label className="checkbox">
-        <input type="hidden" name="published" value="false" />
-        <input
-          type="checkbox"
-          name="published"
-          value="true"
-          defaultChecked={field?.published ?? true}
-        />
-        Publicado
-      </label>
       <button className="button" type="submit">
         {field ? "Guardar campo" : "Agregar campo"}
       </button>
@@ -273,13 +277,25 @@ function StaffSubmissionCard({
           entries.map(([fieldId, value]) => {
             const field = fieldById.get(fieldId);
             const label = field?.label ?? "Campo eliminado";
-            const isDrive = field?.type === "DRIVE_URL" || /^https?:\/\//i.test(value);
+            const pdfAnswer =
+              field?.type === "PDF_FILE" ? parseStaffFileAnswer(value) : null;
+            const isDrive =
+              !pdfAnswer &&
+              (field?.type === "DRIVE_URL" || /^https?:\/\//i.test(value));
 
             return (
               <div key={fieldId}>
                 <dt>{label}</dt>
                 <dd>
-                  {isDrive ? (
+                  {pdfAnswer ? (
+                    <a
+                      href={`/admin/staff/cv/${submission.id}?fieldId=${encodeURIComponent(fieldId)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Ver curriculum ({pdfAnswer.name})
+                    </a>
+                  ) : isDrive ? (
                     <a href={value} target="_blank" rel="noreferrer">
                       {value}
                     </a>

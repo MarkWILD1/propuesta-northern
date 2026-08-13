@@ -2235,6 +2235,28 @@ a.workshop-card:hover .workshop-media img {
   min-height: 48px;
 }
 
+.staff-file-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+}
+
+.staff-file-input::file-selector-button {
+  margin-right: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--title-dark);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .staff-form-success {
   margin: 0;
   padding: 28px 8px;
@@ -2243,6 +2265,47 @@ a.workshop-card:hover .workshop-media img {
   font-size: 1.05rem;
   line-height: 1.55;
   text-align: center;
+}
+
+.staff-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.staff-field-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px 16px;
+  align-items: start;
+}
+
+.staff-field-form > h3,
+.staff-field-form > button,
+.staff-field-form > .staff-field-meta {
+  grid-column: 1 / -1;
+}
+
+.staff-field-form textarea {
+  min-height: 88px;
+}
+
+.staff-field-card .form-card {
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.staff-field-meta {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px 16px;
+  align-items: end;
+}
+
+.staff-field-meta > .checkbox {
+  min-height: 46px;
 }
 
 .staff-submission-header {
@@ -2288,6 +2351,17 @@ a.workshop-card:hover .workshop-media img {
 
   .staff-section h2 {
     max-width: 16ch;
+  }
+
+  .staff-fields-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .staff-field-form,
+  .staff-field-meta {
+    grid-template-columns: 1fr;
   }
 }
 

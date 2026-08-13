@@ -71,7 +71,7 @@ export function StaffApplicationSection({
               <span className="staff-point-index" aria-hidden="true">
                 02
               </span>
-              <span>Adjuntá el link de tu curriculum</span>
+              <span>Adjuntá tu curriculum en PDF</span>
             </li>
             <li>
               <span className="staff-point-index" aria-hidden="true">
@@ -93,7 +93,11 @@ export function StaffApplicationSection({
                 <h3>Postulación</h3>
                 <p>Completá el formulario y enviá tu candidatura.</p>
               </div>
-              <form action={formAction} className="staff-form form-grid">
+              <form
+                action={formAction}
+                className="staff-form form-grid"
+                encType="multipart/form-data"
+              >
                 {content.fields.map((field) => (
                   <StaffFieldInput key={field.id} field={field} />
                 ))}
@@ -149,6 +153,26 @@ function StaffFieldInput({ field }: { field: StaffField }) {
             </option>
           ))}
         </select>
+      </div>
+    );
+  }
+
+  if (field.type === "PDF_FILE") {
+    return (
+      <div className="field">
+        <label htmlFor={id}>
+          {field.label}
+          {field.required ? "" : " (opcional)"}
+        </label>
+        <input
+          id={id}
+          name={name}
+          type="file"
+          accept="application/pdf,.pdf"
+          required={field.required}
+          className="staff-file-input"
+        />
+        <small>Solo PDF, máximo 5 MB.</small>
       </div>
     );
   }
